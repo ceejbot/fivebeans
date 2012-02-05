@@ -161,11 +161,17 @@ Request statistics for the beanstalkd server. Responds with a hash containing in
 ## FiveBeansWorker
 
 Inspired by [node-beanstalk-worker](https://github.com/benlund/node-beanstalk-worker)
-but updated & rewritten to my eccentric standards.
+but updated & rewritten to work with jobs queued by [Stalker](https://github.com/kr/stalker). 
 
-The worker pulls jobs off the queue & passes them to matching handlers. It deletes successful jobs & requeues unsuccessful ones. It logs its actions.
+The worker pulls jobs off the queue & passes them to matching handlers. It deletes successful jobs & requeues unsuccessful ones. It logs its actions to the console and to a file.
 
-Each job must be a JSON hash with two fields:
+Each job must be a JSON list containing two items:
+
+`[ tubename, jobdata ]`
+
+This is for compatibility with the Stalker library, which wraps the job data this way.
+
+The job data is a hash with two fields:
 
 __type__: type string matching a handler  
 __payload__: job data, in whatever format the job defines
@@ -250,8 +256,8 @@ watch:
     - 'central'
 handlers:
     - "./handlers/holborn.js"
-    - "./handlers/knightsbridge.js"
     - "./handlers/greenpark.js"
+    - "./handlers/knightsbridge.js"
 logdir: "/path/to/log"
 ignoreDefault: true
 ```
