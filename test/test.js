@@ -206,13 +206,13 @@ describe('FiveBeansClient', function()
 				});
 			});
 		});
-		it('#destroy deletes a job', function(done)
+		it('#delete deletes a job', function(done)
 		{
 			// this takes a couple of seconds because of the minumum delay enforced by pause_tube() above
 			this.timeout(5000);
 			consumer.reserve(function(err, jobid, payload)
 			{
-				consumer.destroy(jobid, function(err)
+				consumer.delete(jobid, function(err)
 				{
 					should.not.exist(err);
 					done();

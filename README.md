@@ -4,7 +4,7 @@ A straightforward and (nearly) complete [beanstalkd](http://kr.github.com/beanst
 
 Heavily inspired by [node-beanstalk-client](https://github.com/benlund/node-beanstalk-client), which is a perfectly usable client but somewhat dusty. I wanted more complete support of the beanstalkd protocol in a project written in plain javascript.
 
-All client method names are the same case & spelling as the beanstalk text command, with hyphens replaced by underscore. The single exception is 'delete', which is called as "destroy()".
+All client method names are the same case & spelling as the beanstalk text command, with hyphens replaced by underscore. 
 
 For complete details on the beanstalkd commands, see [its protocol documentation](https://github.com/kr/beanstalkd/blob/master/doc/protocol.txt).
 
@@ -96,11 +96,11 @@ Reserve a job, waiting the specified number of seconds before timing out. *err* 
 
 Inform the server that the client is still processing a job, thus requesting more time to work on it. 
 
-#### destroy/delete
+#### delete
 
-`client.destroy(jobid, function(err) {});`
+`client.delete(jobid, function(err) {});`
 
-Delete the specified job. Responds with null if successful, a string error otherwise. This is the only method without a name identical to the underlying beanstalkd command. The equivalent is `delete`.
+Delete the specified job. Responds with null if successful, a string error otherwise. 
 
 #### release
 
@@ -262,13 +262,13 @@ logdir: "/path/to/log"
 ignoreDefault: true
 ```
 
-You may omit the __logdir__ line to suppress logging to a file.
-
 __beanstalkd__: where to connect  
 __watch__: a list of tubes to watch.  
 __handlers__: a list of handler files to require  
 __logdir__: path to the directory for worker logs  
 __ignoreDefault__: true if this worker should ignore the default tube
+
+You may omit the __logdir__ line to suppress logging to a file.
 
 If the handler paths don't start with `/` the current working directory will be prepended to them before they are required.
 
