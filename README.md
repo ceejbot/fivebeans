@@ -12,14 +12,12 @@ For complete details on the beanstalkd commands, see [its protocol documentation
 
 ```javascript
 var fivebeans = require('fivebeans');
-var options = { address: '127.0.0.1', port: 11300 };
-var client = new fivebeans.client(options);
+var client = new fivebeans.client('10.0.1.1', 11300);
 ```
 
-*options* is a hash specifying the beanstalkd server to connect to.
+The constructor takes two arguments: 
 
-__server__: 'address:port' E.g., `"10.0.1.100:11300"`.  
-__address__: Dotted quad giving the address of the beanstalkd server. Defaults to `127.0.0.1`.  
+__host__: The address of the beanstalkd server. Defaults to `127.0.0.1`.  
 __port__: Port to connect to. Defaults to `11300`.
 
 ### Producing jobs
@@ -272,4 +270,3 @@ Unit test for touch().
 Unit test for pause_tube().  
 Handle DEADLINE_SOON from the server.  
 More configurable logging for workers.  
-Clean up beanstalkd specification; just use server => 'quad:port'.

@@ -1,8 +1,9 @@
 var should = require('chai').should();
 
-var fivebeans = require('../lib/fivebeans');
+var fivebeans = require('../fivebeans');
 
-var server = '10.0.0.14:11300';
+var host = '10.0.0.14';
+var port = 11300;
 var tube = 'testtube';
 
 describe('FiveBeansClient', function()
@@ -13,16 +14,16 @@ describe('FiveBeansClient', function()
 
 	before(function()
 	{
-		producer = new fivebeans.client({'server': server});
-		consumer = new fivebeans.client({'server': server});
+		producer = new fivebeans.client(host);
+		consumer = new fivebeans.client(host, port);
 	});
 
 	describe('#FiveBeansClient()', function()
 	{
 		it('creates a client with the passed-in options', function()
 		{
-			producer.address.should.equal('10.0.0.14');
-			producer.port.should.equal('11300');
+			producer.host.should.equal('10.0.0.14');
+			producer.port.should.equal(11300);
 		});
 	});
 	describe('#connect()', function()
