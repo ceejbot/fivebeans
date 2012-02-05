@@ -1,7 +1,7 @@
 {
   "name"            : "fivebeans",
   "description"     : "beanstalkd client & worker daemon for node.",
-  "version"         : "0.0.1",
+  "version"         : "0.1.0",
   "author"          : "C J Silverio <ceejceej@gmail.com>",
   "keywords"        : ["beanstalkd", "worker", "jobs" ],
   "dependencies"    : {
@@ -14,5 +14,6 @@
                         "url" : "git://github.com/ceejbot/fivebeans.git" },
   "bugs"            : "http://github.com/ceejbot/fivebeans/issues"
   "main"            : "fivebeans",
-  "scripts"         : {"test": "mocha -R spec test/test.js"},
+  "bin"             : { "beanworker": "./bin/beanworker" },
+  "scripts"         : { "test": "mocha -R spec test/test.js" }
 }

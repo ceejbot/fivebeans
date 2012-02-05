@@ -1,8 +1,8 @@
-A straight and (nearly) complete [beanstalkd](http://kr.github.com/beanstalkd/) client for node.js, along with a more opinionated beanstalkd jobs worker & runner.
+A straightforward and (nearly) complete [beanstalkd](http://kr.github.com/beanstalkd/) client for node.js, along with a more opinionated beanstalkd jobs worker & runner.
 
 ## FiveBeansClient
 
-Heavily inspired by [node-beanstalk-client](https://github.com/benlund/node-beanstalk-client), which is a perfectly usable client but somewhat dusty. I wanted more complete support of the beanstalkd protocol in a project written in straight javascript.
+Heavily inspired by [node-beanstalk-client](https://github.com/benlund/node-beanstalk-client), which is a perfectly usable client but somewhat dusty. I wanted more complete support of the beanstalkd protocol in a project written in plain javascript.
 
 All client method names are the same case & spelling as the beanstalk text command, with hyphens replaced by underscore. The single exception is 'delete', which is called as "destroy()".
 
@@ -262,6 +262,8 @@ logdir: "/path/to/log"
 ignoreDefault: true
 ```
 
+You may omit the __logdir__ line to suppress logging to a file.
+
 __beanstalkd__: where to connect  
 __watch__: a list of tubes to watch.  
 __handlers__: a list of handler files to require  
@@ -272,7 +274,4 @@ If the handler paths don't start with `/` the current working directory will be 
 
 ## TODO 
 
-Unit test for touch().  
-Unit test for pause_tube().  
 Handle DEADLINE_SOON from the server.  
-More configurable logging for workers.  

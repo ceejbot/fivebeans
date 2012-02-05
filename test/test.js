@@ -138,6 +138,14 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
+		it('#touch informs the server the client is still working', function(done)
+		{
+			consumer.touch(testjobid, function(err)
+			{
+				should.not.exist(err);
+				done();
+			});
+		});
 		it('#release releases a job', function(done)
 		{
 			consumer.release(testjobid, 1, 1, function(err)
@@ -158,6 +166,7 @@ describe('FiveBeansClient', function()
 		it('#bury buries a job', function(done)
 		{
 			// this takes a second because of the minumum delay enforced by release() above
+			this.timeout(3000);
 			consumer.reserve(function(err, jobid, payload)
 			{
 				consumer.bury(jobid, fivebeans.LOWEST_PRIORITY, function(err)
@@ -185,8 +194,22 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
+		it('#pause_tube suspends new job reservations', function(done)
+		{
+			consumer.pause_tube(tube, 3, function(err)
+			{
+				should.not.exist(err);
+				consumer.reserve_with_timeout(1, function(err, jobid, payload)
+				{
+					err.should.equal('TIMED_OUT');
+					done();
+				});
+			});
+		});
 		it('#destroy deletes a job', function(done)
 		{
+			// this takes a couple of seconds because of the minumum delay enforced by pause_tube() above
+			this.timeout(5000);
 			consumer.reserve(function(err, jobid, payload)
 			{
 				consumer.destroy(jobid, function(err)
@@ -198,7 +221,8 @@ describe('FiveBeansClient', function()
 		});
 		it('#reserve_with_timeout times out when no jobs are waiting', function(done)
 		{
-			consumer.reserve_with_timeout(0, function(err, jobid, payload)
+			this.timeout(3000);
+			consumer.reserve_with_timeout(1, function(err, jobid, payload)
 			{
 				err.should.equal('TIMED_OUT');
 				done();
