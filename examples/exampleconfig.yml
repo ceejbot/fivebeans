@@ -1,0 +1,10 @@
+beanstalkd:
+    host: "10.0.0.14"
+    port: 11300
+handlers:
+    - "./handlers/emitkeys.js"
+    - "./handlers/reverse.js"
+logdir: "."
+watch:
+    - 'testtube'
+ignoreDefault: true
