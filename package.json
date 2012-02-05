@@ -9,10 +9,10 @@
 						"optimist": "0.3.x",
                         "winston": "0.5.x"
 					  }
-  "devDependencies" : { "mocha": "0.9.x", "chai": "0.1.x", "async": "0.1.x" },
+  "devDependencies" : { "mocha": "0.9.x", "chai": "0.1.x" },
   "repository"      : { "type": "git",
-                        "url" : "git://github.com/ceejbot/prefix-completer.git" },
-  "bugs"            : "http://github.com/ceejbot/prefix-completer/issues"
-  "main"            : "./lib/fivebeans",
+                        "url" : "git://github.com/ceejbot/fivebeans.git" },
+  "bugs"            : "http://github.com/ceejbot/fivebeans/issues"
+  "main"            : "fivebeans",
   "scripts"         : {"test": "mocha -R spec test/test.js"},
 }
