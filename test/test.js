@@ -2,7 +2,7 @@ var should = require('chai').should();
 
 var fivebeans = require('../fivebeans');
 
-var host = '10.0.0.14';
+var host = '127.0.0.1';
 var port = 11300;
 var tube = 'testtube';
 
@@ -22,8 +22,8 @@ describe('FiveBeansClient', function()
 	{
 		it('creates a client with the passed-in options', function()
 		{
-			producer.host.should.equal('10.0.0.14');
-			producer.port.should.equal(11300);
+			producer.host.should.equal(host);
+			producer.port.should.equal(port);
 		});
 	});
 	describe('#connect()', function()
