@@ -96,11 +96,11 @@ Reserve a job, waiting the specified number of seconds before timing out. *err* 
 
 Inform the server that the client is still processing a job, thus requesting more time to work on it. 
 
-#### delete
+#### destroy
 
-`client.delete(jobid, function(err) {});`
+`client.destroy(jobid, function(err) {});`
 
-Delete the specified job. Responds with null if successful, a string error otherwise. 
+Delete the specified job. Responds with null if successful, a string error otherwise. This is the only method not named identically to its beanstalkd counterpart, because delete is a reserved word in Javascript.
 
 #### release
 
