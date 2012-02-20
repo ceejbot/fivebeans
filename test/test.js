@@ -163,7 +163,7 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#bury buries a job', function(done)
+		it('#bury buries a job (> 1sec expected)', function(done)
 		{
 			// this takes a second because of the minumum delay enforced by release() above
 			this.timeout(3000);
@@ -194,7 +194,7 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#pause_tube suspends new job reservations', function(done)
+		it('#pause_tube suspends new job reservations (> 1sec expected)', function(done)
 		{
 			consumer.pause_tube(tube, 3, function(err)
 			{
@@ -206,7 +206,7 @@ describe('FiveBeansClient', function()
 				});
 			});
 		});
-		it('#destroy deletes a job', function(done)
+		it('#destroy deletes a job (nearly 2 sec expected)', function(done)
 		{
 			// this takes a couple of seconds because of the minumum delay enforced by pause_tube() above
 			this.timeout(5000);
@@ -219,7 +219,7 @@ describe('FiveBeansClient', function()
 				});
 			});
 		});
-		it('#reserve_with_timeout times out when no jobs are waiting', function(done)
+		it('#reserve_with_timeout times out when no jobs are waiting (> 1sec expected)', function(done)
 		{
 			this.timeout(3000);
 			consumer.reserve_with_timeout(1, function(err, jobid, payload)
