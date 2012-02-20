@@ -188,6 +188,8 @@ __delay__: time to delay if the job is released; otherwise unused
 
 If the *action* is "success", the job is deleted. If it is "release", the job is released with the specified delay. If it is "bury", the job is buried. All other actions are treated as errors & the job is buried in response.
 
+Handlers are extended with [winston](https://github.com/flatiron/winston) logging functions before they're used. This gives you access to each worker's logger inside your handlers. From within work(), call logging methods on `this`. 
+
 ### API
 
 `new FiveBeansWorker(options)`

@@ -1,8 +1,11 @@
 (function() {
 
+var logger;
+
 function work(payload, callback)
 {
-	console.log(reverseString(payload));
+	logger = this;
+	this.info(reverseString(payload));
 	callback('success');
 }
 
@@ -10,6 +13,7 @@ function reverseString(input)
 {
 	var letters = input.split('');
 	letters.reverse();
+	logger.debug(letters);
 	return letters.join('');
 }
 
