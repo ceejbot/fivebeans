@@ -276,4 +276,6 @@ If the handler paths don't start with `/` the current working directory will be 
 
 ## TODO 
 
-Handle DEADLINE_SOON from the server.  
+* Handle DEADLINE_SOON from the server.  
+
+* Hacky manner of exposing logging to the job handlers is hacky. Also too tied to the specific logging engine. Replace.

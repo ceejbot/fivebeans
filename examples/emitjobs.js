@@ -22,9 +22,9 @@ var job2 = {
 var emitter = new fivebeans.client(host, port);
 emitter.connect(function(err)
 {
-	emitter.use('testtube', function(err, count)
+	emitter.use('testtube', function(err, tname)
 	{
-		console.log("watching "+count+"tube(s)");
+		console.log("using "+tname);
 		emitter.put(0, 0, 60, JSON.stringify(['testtube', job1]), function(err, jobid)
 		{
 			console.log('queued a string reverse job in testtube: '+jobid);
