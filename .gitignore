@@ -1,0 +1,7 @@
+**node_modules
+.DS_Store
+log/**/*
+tmp/**/*
+config.yml
+backup
+**.log
