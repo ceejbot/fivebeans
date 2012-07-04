@@ -1,14 +1,19 @@
-(function() {
-
-function work(payload, callback)
+module.exports = function(logger)
 {
-	for (var k in payload) 
-		if (payload.hasOwnProperty(k)) 
-			this.info(k);
-	callback('success');
-}
+	function EmitKeysHandler()
+	{
+		this.type = 'emitkeys';
+	}
 
-exports.type = 'emitkeys';
-exports.work = work;
+	EmitKeysHandler.prototype.work = function(payload, callback)
+	{
+		var keys = Object.keys(payload);
+		for (var i = 0; i < keys.length; i++)
+			this.logger.info(keys[i]);
+		callback('success');
+	}
 
-}).call(this);
+	var handler = new EmitKeysHandler();
+	if (logger) handler.setLogger(logger);
+	return handler;
+};

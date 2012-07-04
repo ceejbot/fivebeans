@@ -1,25 +1,25 @@
-(function() {
-
-var logger;
-
-function work(payload, callback)
+module.exports = function(logger)
 {
-	logger = this;
-	this.info(reverseString(payload));
-	callback('success');
-}
+	function StringReverser()
+	{
+		this.type = 'reverse';
+	}
 
-function reverseString(input)
-{
-	var letters = input.split('');
-	letters.reverse();
-	logger.debug(letters);
-	return letters.join('');
-}
+	StringReverser.prototype.work = function(payload, callback)
+	{
+		this.logger.info(this.reverseString(payload));
+		callback('success');
+	}
 
-exports.type = 'reverse';
-exports.work = work;
+	StringReverser.prototype.reverseString = function(input)
+	{
+		var letters = input.split('');
+		letters.reverse();
+		this.logger.debug(letters);
+		return letters.join('');
+	}
 
-}).call(this);
-
-
+	var handler = new StringReverser();
+	if (logger) handler.logger = logger;
+	return handler;
+};
