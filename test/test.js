@@ -196,7 +196,7 @@ describe('FiveBeansClient', function()
 		it('jobs can contain utf8 data', function(done)
 		{
 			var payload = "Many people like crème brûlée.";
-			var ptr = 0;
+			var returnString;
 			producer.put(0, 0, 60, payload, function(err, jobid)
 			{
 				should.not.exist(err);
@@ -206,9 +206,9 @@ describe('FiveBeansClient', function()
 				{
 					should.not.exist(err);
 					returnID.should.equal(jobid);
-
 					// we should get back exactly the same bytes we put in
-					returnPayload.should.equal(payload);
+					returnString = returnPayload.toString();
+					returnString.should.equal(payload);
 					consumer.destroy(returnID, function(err)
 					{
 						should.not.exist(err);

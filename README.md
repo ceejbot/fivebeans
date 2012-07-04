@@ -4,7 +4,7 @@ A straightforward and (nearly) complete [beanstalkd](http://kr.github.com/beanst
 
 Heavily inspired by [node-beanstalk-client](https://github.com/benlund/node-beanstalk-client), which is a perfectly usable client but somewhat dusty. I wanted more complete support of the beanstalkd protocol in a project written in plain javascript.
 
-All client method names are the same case & spelling as the beanstalk text command, with hyphens replaced by underscore. 
+All client method names are the same case & spelling as the beanstalk text command, with hyphens replaced by underscore. The single exception is "delete", which is renamed to "destroy".
 
 For complete details on the beanstalkd commands, see [its protocol documentation](https://github.com/kr/beanstalkd/blob/master/doc/protocol.txt).
 
@@ -38,25 +38,25 @@ Responds with the name of the tube currently being used by the client.
 
 `client.put(priority, delay, ttr, payload, function(err, jobid) {});`
 
-Submit a job with the specified priority (smaller integers are higher priority), delay in seconds, and allowed time-to-run in seconds. The payload contains the job data the server will return to clients reserving jobs. No processing is done on the data. Responds with the id of the newly-created job.
+Submit a job with the specified priority (smaller integers are higher priority), delay in seconds, and allowed time-to-run in seconds. The payload contains the job data the server will return to clients reserving jobs; it can be either a Buffer object or a string. No processing is done on the data. Responds with the id of the newly-created job.
 
 #### peek_ready
 
 `client.peek_ready(function(err, jobid, payload) {});`
 
-Peek at the data for the job at the top of the ready queue of the tube currently in use. Responds with the job id and payload of the next job, or 'NOT_FOUND' if there are no qualifying jobs in the tube.
+Peek at the data for the job at the top of the ready queue of the tube currently in use. Responds with the job id and payload of the next job, or 'NOT_FOUND' if there are no qualifying jobs in the tube. The payload is a Buffer object.
 
 #### peek_delayed
 
 `client.peek_delayed(function(err, jobid, payload) {});`
 
-Peek at the data for the delayed job with the shortest delay in the tube currently in use. Responds with the job id and payload of the next job, or 'NOT_FOUND' if there are no qualifying jobs in the tube.
+Peek at the data for the delayed job with the shortest delay in the tube currently in use. Responds with the job id and payload of the next job, or 'NOT_FOUND' if there are no qualifying jobs in the tube. The payload is a Buffer object.
 
 #### peek_buried
 
 `client.peek_buried(function(err, jobid, payload) {});`
 
-Peek at the data for the next buried job in the tube currently in use. Responds with the job id and payload of the next job, or 'NOT_FOUND' if there are no qualifying jobs in the tube.
+Peek at the data for the next buried job in the tube currently in use. Responds with the job id and payload of the next job, or 'NOT_FOUND' if there are no qualifying jobs in the tube. The payload is a Buffer object.
 
 ### Consuming jobs
 
@@ -82,13 +82,13 @@ Responds with an array containing the names of the tubes currently watched by th
 
 `client.reserve(function(err, jobid, payload) {});`
 
-Reserve a job. Responds with the id and the job data. The data is passed through untouched.
+Reserve a job. Responds with the id and the job data. The payload is a Buffer object.
 
 #### reserve_with_timeout
 
 `client.reserve_with_timeout(seconds, function(err, jobid, payload) {});`
 
-Reserve a job, waiting the specified number of seconds before timing out. *err* contains the string "TIMED_OUT" if the specified time elapsed before a job became available.
+Reserve a job, waiting the specified number of seconds before timing out. *err* contains the string "TIMED_OUT" if the specified time elapsed before a job became available. Payload is a buffer.
 
 #### touch
 
@@ -126,7 +126,7 @@ Kick at most *maxToKick* delayed and buried jobs back into the active queue. Res
 
 `client.peek(id, function(err, jobid, payload) {});`
 
-Peek at the data for the specified job.
+Peek at the data for the specified job. Payload is a Buffer object.
 
 #### pause_tube
 
