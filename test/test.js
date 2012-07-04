@@ -184,7 +184,31 @@ describe('FiveBeansClient', function()
 						returnPayload[ptr].should.equal(payload[ptr]);
 						ptr++;
 					}
+					consumer.destroy(returnID, function(err)
+					{
+						should.not.exist(err);
+						done();
+					});
+				});
+			});
+		});
 
+		it('jobs can contain utf8 data', function(done)
+		{
+			var payload = "Many people like crème brûlée.";
+			var ptr = 0;
+			producer.put(0, 0, 60, payload, function(err, jobid)
+			{
+				should.not.exist(err);
+				jobid.should.exist;
+
+				consumer.reserve(function(err, returnID, returnPayload)
+				{
+					should.not.exist(err);
+					returnID.should.equal(jobid);
+
+					// we should get back exactly the same bytes we put in
+					returnPayload.should.equal(payload);
 					consumer.destroy(returnID, function(err)
 					{
 						should.not.exist(err);
