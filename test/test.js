@@ -1,10 +1,17 @@
 var should = require('chai').should();
 
-var fivebeans = require('../fivebeans');
+var fivebeans = require('../fivebeans'),
+	fs = require('fs')
+	;
 
-var host = '127.0.0.1';
+var host = '10.0.0.14';
 var port = 11300;
 var tube = 'testtube';
+
+function readTestImage()
+{
+	return fs.readFileSync('./test/test.png');
+}
 
 describe('FiveBeansClient', function()
 {
@@ -38,7 +45,7 @@ describe('FiveBeansClient', function()
 			});
 		});
 	});
-	describe('job producer', function()
+	describe('job producer:', function()
 	{
 		it('#use connects to a specific tube', function(done)
 		{
@@ -69,7 +76,7 @@ describe('FiveBeansClient', function()
 			});
 		});
 	});
-	describe('job consumer', function()
+	describe('job consumer:', function()
 	{
 		it('#watch watches a tube', function(done)
 		{
@@ -104,6 +111,7 @@ describe('FiveBeansClient', function()
 		});
 		it('#peek_ready peeks ahead at jobs', function(done)
 		{
+			this.timeout(4000);
 			producer.peek_ready(function(err, jobid, payload)
 			{
 				should.not.exist(err);
@@ -154,6 +162,28 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
+
+/*
+		it('jobs can contain binary data', function(done)
+		{
+			var payload = readTestImage();
+			producer.put(0, 0, 60, payload, function(err, jobid)
+			{
+				should.not.exist(err);
+				jobid.should.exist;
+				console.log(jobid);
+
+				consumer.reserve(function(err, returnID, returnPayload)
+				{
+					should.not.exist(err);
+					returnID.should.equal(jobid);
+					returnPayload.length.should.equal(payload.length);
+					done();
+				});
+			});
+		});
+*/
+
 		it('#peek_delayed returns data for a delayed job', function(done)
 		{
 			producer.peek_delayed(function(err, jobid, payload)
@@ -229,7 +259,7 @@ describe('FiveBeansClient', function()
 			});
 		});
 	});
-	
+
 	describe('server statistics', function()
 	{
 		it('#stats returns a hash of server stats', function(done)
@@ -270,6 +300,6 @@ describe('FiveBeansClient', function()
 			});
 		});
 	});
-	
+
 	// untested: consumer.touch(), consumer.pause_tube()
 });
