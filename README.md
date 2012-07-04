@@ -178,7 +178,7 @@ __payload__: job data, in whatever format the job defines
 
 The worker looks up a handler using the given type string and calls work() on the job payload.
 
-Handler modules must export a field called 'type' with a brief descriptive string. They must also export a method called work() with this signature:
+Handler modules must export a single function that returns an object. The object must have a field called 'type' with a brief descriptive string. It must also expose a function called work() with this signature:
 
 `work(jobdata, callback(action, delay))`
 
@@ -188,7 +188,33 @@ __delay__: time to delay if the job is released; otherwise unused
 
 If the *action* is "success", the job is deleted. If it is "release", the job is released with the specified delay. If it is "bury", the job is buried. All other actions are treated as errors & the job is buried in response.
 
-Handlers are extended with [winston](https://github.com/flatiron/winston) logging functions before they're used. This gives you access to each worker's logger inside your handlers. From within work(), call logging methods on `this`. 
+When the worker loads its handlers, it sets a `logger` field on each to its own logger object. Handlers may therefore call winston logging methods on `this.logger` in their work methods. 
+
+Here's a simple handler example.
+
+```javascript
+module.exports = function()
+{
+    function EmitKeysHandler()
+    {
+        this.type = 'emitkeys';
+    }
+
+    EmitKeysHandler.prototype.work = function(payload, callback)
+    {
+        var keys = Object.keys(payload);
+        for (var i = 0; i < keys.length; i++)
+            this.logger.info(keys[i]);
+        callback('success');
+    }
+
+    var handler = new EmitKeysHandler();
+    return handler;
+};
+```
+
+The [examples](fivebeans/examples) directory has another sample handler.
+
 
 ### API
 
@@ -278,4 +304,5 @@ If the handler paths don't start with `/` the current working directory will be 
 
 * Handle DEADLINE_SOON from the server.  
 
-* Hacky manner of exposing logging to the job handlers is hacky. Also too tied to the specific logging engine. Replace.
+* Write proper unit tests for the worker/runner/handler interaction.
+

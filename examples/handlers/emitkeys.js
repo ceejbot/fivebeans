@@ -14,6 +14,6 @@ module.exports = function(logger)
 	}
 
 	var handler = new EmitKeysHandler();
-	if (logger) handler.setLogger(logger);
+	if (logger) handler.logger = logger;
 	return handler;
 };
