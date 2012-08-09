@@ -13,12 +13,19 @@ For complete details on the beanstalkd commands, see [its protocol documentation
 ```javascript
 var fivebeans = require('fivebeans');
 var client = new fivebeans.client('10.0.1.1', 11300);
+client.connect(function(err){
+	// client can now be used
+})
 ```
 
 The constructor takes two arguments: 
 
 __host__: The address of the beanstalkd server. Defaults to `127.0.0.1`.  
 __port__: Port to connect to. Defaults to `11300`.
+
+`connect` takes one callback argument. Its `err` parameter is `null` when the the client has connected to beanstalkd, an error object when a connection error has occurred, or `false` when the connection has been closed.
+
+Be aware: after connecting, the callback will be called again if a connection error occurs or the server disconnects!
 
 ### Producing jobs
 
@@ -226,7 +233,7 @@ __id__: how this worker should identify itself in logs
 __host__: beanstalkd host  
 __port__: beanstalkd port  
 __logdir__: directory for log files  
-__handlers__: list of handler objects; see above
+__handlers__: object with handler objects, having the handler type as key.
 
 `start(tubelist, ignoreDefault)`
 
@@ -234,9 +241,14 @@ Connects the worker to the beanstalkd server & sets it watching the specified tu
 
 ### Example
 
+This example starts a worker, capable of handling the `emitkeys` example from above.
+
 ```javascript
 
 var beanworker = require('fivebeans').worker;
+var handlerList = {
+	emitkeys: require('./emitkeyshandler');
+}
 var options = {
 	id: 'worker_4', 
 	host: '127.0.0.1',
