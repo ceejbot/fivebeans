@@ -4,7 +4,7 @@ var fivebeans = require('../fivebeans'),
 	fs = require('fs')
 	;
 
-var host = 'localhost';
+var host = '127.0.0.1';
 var port = 11300;
 var tube = 'testtube';
 
