@@ -15,7 +15,8 @@ For complete details on the beanstalkd commands, see [its protocol documentation
 ```javascript
 var fivebeans = require('fivebeans');
 var client = new fivebeans.client('10.0.1.1', 11300);
-client.connect(function(err){
+client.connect(function(err)
+{
 	// client can now be used
 })
 ```
