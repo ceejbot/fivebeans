@@ -1,4 +1,5 @@
 [![build status](https://secure.travis-ci.org/ceejbot/fivebeans.png)](http://travis-ci.org/ceejbot/fivebeans)
+
 A straightforward and (nearly) complete [beanstalkd](http://kr.github.com/beanstalkd/) client for node.js, along with a more opinionated beanstalkd jobs worker & runner.
 
 ## FiveBeansClient
@@ -19,9 +20,9 @@ client.connect(function(err){
 })
 ```
 
-The constructor takes two arguments: 
+The constructor takes two arguments:
 
-__host__: The address of the beanstalkd server. Defaults to `127.0.0.1`.  
+__host__: The address of the beanstalkd server. Defaults to `127.0.0.1`.
 __port__: Port to connect to. Defaults to `11300`.
 
 `connect` takes one callback argument. Its `err` parameter is `null` when the the client has connected to beanstalkd, an error object when a connection error has occurred, or `false` when the connection has been closed.
@@ -102,7 +103,7 @@ Reserve a job, waiting the specified number of seconds before timing out. *err* 
 
 `client.touch(jobid, function(err) {});`
 
-Inform the server that the client is still processing a job, thus requesting more time to work on it. 
+Inform the server that the client is still processing a job, thus requesting more time to work on it.
 
 #### destroy
 
@@ -114,13 +115,13 @@ Delete the specified job. Responds with null if successful, a string error other
 
 `client.release(jobid, priority, delay, function(err) {});`
 
-Release the specified job and assign it the given priority and delay (in seconds). Responds with null if successful, a string error otherwise. 
+Release the specified job and assign it the given priority and delay (in seconds). Responds with null if successful, a string error otherwise.
 
 #### bury
 
 `client.bury(jobid, priority, function(err) {});`
 
-Bury the specified job and assign it the given priority. Responds with null if successful, a string error otherwise. 
+Bury the specified job and assign it the given priority. Responds with null if successful, a string error otherwise.
 
 #### kick
 
@@ -169,7 +170,7 @@ Request statistics for the beanstalkd server. Responds with a hash containing in
 ## FiveBeansWorker
 
 Inspired by [node-beanstalk-worker](https://github.com/benlund/node-beanstalk-worker)
-but updated & rewritten to work with jobs queued by [Stalker](https://github.com/kr/stalker). 
+but updated & rewritten to work with jobs queued by [Stalker](https://github.com/kr/stalker).
 
 The worker pulls jobs off the queue & passes them to matching handlers. It deletes successful jobs & requeues unsuccessful ones. It logs its actions to the console and to a file.
 
@@ -181,7 +182,7 @@ This is for compatibility with the Stalker library, which wraps the job data thi
 
 The job data is a hash with two fields:
 
-__type__: type string matching a handler  
+__type__: type string matching a handler
 __payload__: job data, in whatever format the job defines
 
 The worker looks up a handler using the given type string and calls work() on the job payload.
@@ -190,13 +191,13 @@ Handler modules must export a single function that returns an object. The object
 
 `work(jobdata, callback(action, delay))`
 
-__jobdata__: job payload  
-__action__: 'success' | 'release' | 'bury' | custom error message  
+__jobdata__: job payload
+__action__: 'success' | 'release' | 'bury' | custom error message
 __delay__: time to delay if the job is released; otherwise unused
 
 If the *action* is "success", the job is deleted. If it is "release", the job is released with the specified delay. If it is "bury", the job is buried. All other actions are treated as errors & the job is buried in response.
 
-When the worker loads its handlers, it sets a `logger` field on each to its own logger object. Handlers may therefore call winston logging methods on `this.logger` in their work methods. 
+When the worker loads its handlers, it sets a `logger` field on each to its own logger object. Handlers may therefore call winston logging methods on `this.logger` in their work methods.
 
 Here's a simple handler example.
 
@@ -230,10 +231,10 @@ The [examples](fivebeans/examples) directory has another sample handler.
 
 Returns a new worker object. *options* is a hash containing the following keys:
 
-__id__: how this worker should identify itself in logs   
-__host__: beanstalkd host  
-__port__: beanstalkd port  
-__logdir__: directory for log files  
+__id__: how this worker should identify itself in logs
+__host__: beanstalkd host
+__port__: beanstalkd port
+__logdir__: directory for log files
 __handlers__: object with handler objects, having the handler type as key.
 
 `start(tubelist, ignoreDefault)`
@@ -251,7 +252,7 @@ var handlerList = {
 	emitkeys: require('./emitkeyshandler');
 }
 var options = {
-	id: 'worker_4', 
+	id: 'worker_4',
 	host: '127.0.0.1',
 	port: 11300,
 	logdir: "./logs",
@@ -303,19 +304,19 @@ logdir: "/path/to/log"
 ignoreDefault: true
 ```
 
-__beanstalkd__: where to connect  
-__watch__: a list of tubes to watch.  
-__handlers__: a list of handler files to require  
-__logdir__: path to the directory for worker logs  
+__beanstalkd__: where to connect
+__watch__: a list of tubes to watch.
+__handlers__: a list of handler files to require
+__logdir__: path to the directory for worker logs
 __ignoreDefault__: true if this worker should ignore the default tube
 
 You may omit the __logdir__ line to suppress logging to a file.
 
 If the handler paths don't start with `/` the current working directory will be prepended to them before they are required.
 
-## TODO 
+## TODO
 
-* Handle DEADLINE_SOON from the server.  
+* Handle DEADLINE_SOON from the server.
 
 * Write proper unit tests for the worker/runner/handler interaction.
 
