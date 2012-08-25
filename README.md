@@ -23,8 +23,8 @@ client.connect(function(err)
 
 The constructor takes two arguments:
 
-__host__: The address of the beanstalkd server. Defaults to `127.0.0.1`.
-__port__: Port to connect to. Defaults to `11300`.
+__host__: The address of the beanstalkd server. Defaults to `127.0.0.1`.  
+__port__: Port to connect to. Defaults to `11300`.  
 
 `connect` takes one callback argument. Its `err` parameter is `null` when the the client has connected to beanstalkd, an error object when a connection error has occurred, or `false` when the connection has been closed.
 
@@ -170,8 +170,7 @@ Request statistics for the beanstalkd server. Responds with a hash containing in
 
 ## FiveBeansWorker
 
-Inspired by [node-beanstalk-worker](https://github.com/benlund/node-beanstalk-worker)
-but updated & rewritten to work with jobs queued by [Stalker](https://github.com/kr/stalker).
+Inspired by [node-beanstalk-worker](https://github.com/benlund/node-beanstalk-worker) but updated & rewritten to work with jobs queued by [Stalker](https://github.com/kr/stalker).
 
 The worker pulls jobs off the queue & passes them to matching handlers. It deletes successful jobs & requeues unsuccessful ones. It logs its actions to the console and to a file.
 
@@ -192,8 +191,8 @@ Handler modules must export a single function that returns an object. The object
 
 `work(jobdata, callback(action, delay))`
 
-__jobdata__: job payload
-__action__: 'success' | 'release' | 'bury' | custom error message
+__jobdata__: job payload  
+__action__: 'success' | 'release' | 'bury' | custom error message  
 __delay__: time to delay if the job is released; otherwise unused
 
 If the *action* is "success", the job is deleted. If it is "release", the job is released with the specified delay. If it is "bury", the job is buried. All other actions are treated as errors & the job is buried in response.
@@ -232,10 +231,10 @@ The [examples](fivebeans/examples) directory has another sample handler.
 
 Returns a new worker object. *options* is a hash containing the following keys:
 
-__id__: how this worker should identify itself in logs
-__host__: beanstalkd host
-__port__: beanstalkd port
-__logdir__: directory for log files
+__id__: how this worker should identify itself in logs  
+__host__: beanstalkd host  
+__port__: beanstalkd port  
+__logdir__: directory for log files  
 __handlers__: object with handler objects, having the handler type as key.
 
 `start(tubelist, ignoreDefault)`
@@ -305,10 +304,10 @@ logdir: "/path/to/log"
 ignoreDefault: true
 ```
 
-__beanstalkd__: where to connect
-__watch__: a list of tubes to watch.
-__handlers__: a list of handler files to require
-__logdir__: path to the directory for worker logs
+__beanstalkd__: where to connect  
+__watch__: a list of tubes to watch.  
+__handlers__: a list of handler files to require  
+__logdir__: path to the directory for worker logs  
 __ignoreDefault__: true if this worker should ignore the default tube
 
 You may omit the __logdir__ line to suppress logging to a file.
