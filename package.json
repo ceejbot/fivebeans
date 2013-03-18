@@ -1,15 +1,15 @@
 {
   "name"            : "fivebeans",
   "description"     : "beanstalkd client & worker daemon for node.",
-  "version"         : "0.2.0",
+  "version"         : "0.2.1",
   "author"          : "C J Silverio <ceejceej@gmail.com>",
   "keywords"        : ["beanstalkd", "worker", "jobs" ],
   "dependencies"    : {
                         "js-yaml": "0.3.x",
-						            "optimist": "0.3.x",
-                        "winston": "0.5.x",
-                        "underscore": "*"
-					            },
+                        "lodash": "*",
+						"optimist": "0.3.x",
+                        "winston": "0.5.x"
+					  },
   "devDependencies" : { "mocha": "0.9.x", "chai": "0.1.x" },
   "repository"      : { "type": "git",
                         "url" : "git://github.com/ceejbot/fivebeans.git" },
