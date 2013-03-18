@@ -314,6 +314,10 @@ You may omit the __logdir__ line to suppress logging to a file.
 
 If the handler paths don't start with `/` the current working directory will be prepended to them before they are required.
 
+## Contributors
+
+Many thanks to @AVVS, @crackcomm, and @zr40 for their pull requests.
+
 ## TODO
 
 * Handle DEADLINE_SOON from the server.
