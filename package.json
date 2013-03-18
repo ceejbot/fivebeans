@@ -7,9 +7,9 @@
   "dependencies"    : {
                         "js-yaml": "0.3.x",
                         "lodash": "*",
-						"optimist": "0.3.x",
+                        "optimist": "0.3.x",
                         "winston": "0.5.x"
-					  },
+                      },
   "devDependencies" : { "mocha": "0.9.x", "chai": "0.1.x" },
   "repository"      : { "type": "git",
                         "url" : "git://github.com/ceejbot/fivebeans.git" },
