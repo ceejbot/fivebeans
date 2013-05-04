@@ -1,3 +1,5 @@
+/*global describe:true, it:true, before:true, after:true */
+
 var
 	should    = require('chai').should(),
 	fivebeans = require('../index'),
@@ -36,12 +38,16 @@ describe('FiveBeansClient', function()
 	{
 		it('creates and saves a connection', function(done)
 		{
-			producer.connect(function(err)
+			producer.on('connect', function()
 			{
-				should.not.exist(err);
 				producer.stream.should.be.ok;
 				done();
+
+			}).on('error', function(err)
+			{
+				throw(err);
 			});
+			producer.connect();
 		});
 	});
 
@@ -83,7 +89,7 @@ describe('FiveBeansClient', function()
 	{
 		it('#watch() watches a tube', function(done)
 		{
-			consumer.connect(function(err)
+			consumer.on('connect', function()
 			{
 				consumer.watch(tube, function(err, response)
 				{
@@ -91,7 +97,11 @@ describe('FiveBeansClient', function()
 					response.should.equal('2');
 					done();
 				});
+			}).on('error', function(err)
+			{
+				throw(err);
 			});
+			consumer.connect();
 		});
 
 		it('#ignore() ignores a tube', function(done)
@@ -136,7 +146,7 @@ describe('FiveBeansClient', function()
 			{
 				response.should.be.a('object');
 				response.should.have.property('id');
-				response.id.should.equal(parseInt(testjobid));
+				response.id.should.equal(parseInt(testjobid, 10));
 				response.tube.should.equal(tube);
 				done();
 			});
@@ -206,7 +216,7 @@ describe('FiveBeansClient', function()
 
 		it('jobs can contain utf8 data', function(done)
 		{
-			var payload = "Many people like crème brûlée.";
+			var payload = 'Many people like crème brûlée.';
 			var returnString;
 			producer.put(0, 0, 60, payload, function(err, jobid)
 			{
