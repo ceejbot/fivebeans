@@ -14,7 +14,7 @@
 	{
 		"blanket": "*",
 		"chai": "*",
-		"mocha": "*",
+		"mocha": "> 1.9",
 		"travis-cov": "*"
 	},
 	"repository"      : { "type": "git", "url" : "git://github.com/ceejbot/fivebeans.git" },
@@ -23,8 +23,9 @@
 	"bin"             : { "beanworker": "./bin/beanworker" },
 	"scripts"         :
 	{
-		"test": "node_modules/.bin/mocha -R spec test/test*.js",
-		"test-cov": "node_modules/.bin/mocha --require blanket -R travis-cov test/test*.js",
+		"test": "./node_modules/.bin/mocha -R spec test/test*.js",
+		"test-cov": "./node_modules/.bin/mocha --require blanket -R travis-cov test/test*.js",
+		"coverage": "./node_modules/.bin/mocha --require blanket -R html-cov test/test*.js > test/coverage.html",
 		"blanket":
 		{
 			"pattern": "//^((?!\/node_modules|test|examples\/).)*$/ig",
