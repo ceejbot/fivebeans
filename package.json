@@ -1,20 +1,35 @@
 {
-  "name"            : "fivebeans",
-  "description"     : "beanstalkd client & worker daemon for node.",
-  "version"         : "0.2.1",
-  "author"          : "C J Silverio <ceejceej@gmail.com>",
-  "keywords"        : ["beanstalkd", "worker", "jobs" ],
-  "dependencies"    : {
-                        "js-yaml": "0.3.x",
-                        "lodash": "*",
-                        "optimist": "0.3.x",
-                        "winston": "0.5.x"
-                      },
-  "devDependencies" : { "mocha": "0.9.x", "chai": "0.1.x" },
-  "repository"      : { "type": "git",
-                        "url" : "git://github.com/ceejbot/fivebeans.git" },
-  "bugs"            : "http://github.com/ceejbot/fivebeans/issues",
-  "main"            : "fivebeans",
-  "bin"             : { "beanworker": "./bin/beanworker" },
-  "scripts"         : { "test": "mocha -R spec test/test.js" }
+	"name"            : "fivebeans",
+	"description"     : "beanstalkd client & worker daemon for node.",
+	"version"         : "1.0.0",
+	"author"          : "C J Silverio <ceejceej@gmail.com>",
+	"keywords"        : ["beanstalkd", "worker", "jobs", "work-queue" ],
+	"dependencies"    :
+	{
+		"js-yaml": "*",
+		"lodash": "*",
+		"optimist": "*"
+	},
+	"devDependencies" :
+	{
+		"blanket": "*",
+		"chai": "*",
+		"mocha": "*",
+		"travis-cov": "*"
+	},
+	"repository"      : { "type": "git", "url" : "git://github.com/ceejbot/fivebeans.git" },
+	"bugs"            : "http://github.com/ceejbot/fivebeans/issues",
+	"main"            : "index",
+	"bin"             : { "beanworker": "./bin/beanworker" },
+	"scripts"         :
+	{
+		"test": "node_modules/.bin/mocha -R spec test/test*.js",
+		"test-cov": "node_modules/.bin/mocha --require blanket -R travis-cov test/test*.js",
+		"blanket":
+		{
+			"pattern": "//^((?!\/node_modules|test|examples\/).)*$/ig",
+			"onlyCwd": true
+		},
+		"travis-cov": { "threshold": 50 }
+	}
 }

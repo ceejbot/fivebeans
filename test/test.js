@@ -1,7 +1,7 @@
-var should = require('chai').should();
-
-var fivebeans = require('../fivebeans'),
-	fs = require('fs')
+var
+	should    = require('chai').should(),
+	fivebeans = require('../index'),
+	fs        = require('fs')
 	;
 
 var host = '127.0.0.1';
@@ -15,9 +15,7 @@ function readTestImage()
 
 describe('FiveBeansClient', function()
 {
-	var producer = null;
-	var consumer = null;
-	var testjobid = null;
+	var producer, consumer, testjobid;
 
 	before(function()
 	{
@@ -33,6 +31,7 @@ describe('FiveBeansClient', function()
 			producer.port.should.equal(port);
 		});
 	});
+
 	describe('#connect()', function()
 	{
 		it('creates and saves a connection', function(done)
@@ -45,9 +44,10 @@ describe('FiveBeansClient', function()
 			});
 		});
 	});
+
 	describe('job producer:', function()
 	{
-		it('#use connects to a specific tube', function(done)
+		it('#use() connects to a specific tube', function(done)
 		{
 			producer.use(tube, function(err, response)
 			{
@@ -56,7 +56,8 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#list_tube_used returns the tube used by a producer', function(done)
+
+		it('#list_tube_used() returns the tube used by a producer', function(done)
 		{
 			producer.list_tube_used(function(err, response)
 			{
@@ -65,7 +66,8 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#put submits a job', function(done)
+
+		it('#put() submits a job', function(done)
 		{
 			var data = { type: 'test', payload: 'the explosive energy of the warhead of a missile or of the bomb load  of an aircraft' };
 			producer.put(0, 0, 60, JSON.stringify(data), function(err, jobid)
@@ -76,9 +78,10 @@ describe('FiveBeansClient', function()
 			});
 		});
 	});
+
 	describe('job consumer:', function()
 	{
-		it('#watch watches a tube', function(done)
+		it('#watch() watches a tube', function(done)
 		{
 			consumer.connect(function(err)
 			{
@@ -90,7 +93,8 @@ describe('FiveBeansClient', function()
 				});
 			});
 		});
-		it('#ignore ignores a tube', function(done)
+
+		it('#ignore() ignores a tube', function(done)
 		{
 			consumer.ignore('default', function(err, response)
 			{
@@ -99,17 +103,22 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#list_tubes_watched returns the tubes the consumer watches', function(done)
+
+		it('#list_tubes_watched() returns the tubes the consumer watches', function(done)
 		{
 			consumer.list_tubes_watched(function(err, response)
 			{
+				console.log(err);
+				console.log(response);
+
 				should.not.exist(err);
 				response.length.should.equal(1);
 				response.indexOf(tube).should.equal(0);
 				done();
 			});
 		});
-		it('#peek_ready peeks ahead at jobs', function(done)
+
+		it('#peek_ready() peeks ahead at jobs', function(done)
 		{
 			this.timeout(4000);
 			producer.peek_ready(function(err, jobid, payload)
@@ -123,7 +132,8 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#stats_job returns job stats', function(done)
+
+		it('#stats_job() returns job stats', function(done)
 		{
 			consumer.stats_job(testjobid, function(err, response)
 			{
@@ -134,7 +144,8 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#reserve returns a job', function(done)
+
+		it('#reserve() returns a job', function(done)
 		{
 			consumer.reserve(function(err, jobid, payload)
 			{
@@ -146,7 +157,8 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#touch informs the server the client is still working', function(done)
+
+		it('#touch() informs the server the client is still working', function(done)
 		{
 			consumer.touch(testjobid, function(err)
 			{
@@ -154,7 +166,8 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#release releases a job', function(done)
+
+		it('#release() releases a job', function(done)
 		{
 			consumer.release(testjobid, 1, 1, function(err)
 			{
@@ -167,6 +180,7 @@ describe('FiveBeansClient', function()
 		{
 			var payload = readTestImage();
 			var ptr = 0;
+
 			producer.put(0, 0, 60, payload, function(err, jobid)
 			{
 				should.not.exist(err);
