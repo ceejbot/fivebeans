@@ -24,7 +24,7 @@ client.connect(function(err)
 The constructor takes two arguments:
 
 __host__: The address of the beanstalkd server. Defaults to `127.0.0.1`.  
-__port__: Port to connect to. Defaults to `11300`.  
+__port__: Port to connect to. Defaults to `11300`.
 
 `connect` takes one callback argument. Its `err` parameter is `null` when the the client has connected to beanstalkd, an error object when a connection error has occurred, or `false` when the connection has been closed.
 
@@ -182,7 +182,7 @@ This is for compatibility with the Stalker library, which wraps the job data thi
 
 The job data is a hash with two fields:
 
-__type__: type string matching a handler
+__type__: type string matching a handler  
 __payload__: job data, in whatever format the job defines
 
 The worker looks up a handler using the given type string and calls work() on the job payload.
@@ -196,8 +196,6 @@ __action__: 'success' | 'release' | 'bury' | custom error message
 __delay__: time to delay if the job is released; otherwise unused
 
 If the *action* is "success", the job is deleted. If it is "release", the job is released with the specified delay. If it is "bury", the job is buried. All other actions are treated as errors & the job is buried in response.
-
-When the worker loads its handlers, it sets a `logger` field on each to its own logger object. Handlers may therefore call winston logging methods on `this.logger` in their work methods.
 
 Here's a simple handler example.
 
@@ -231,10 +229,9 @@ The [examples](fivebeans/examples) directory has another sample handler.
 
 Returns a new worker object. *options* is a hash containing the following keys:
 
-__id__: how this worker should identify itself in logs  
+__id__: how this worker should identify itself in log events  
 __host__: beanstalkd host  
 __port__: beanstalkd port  
-__logdir__: directory for log files  
 __handlers__: object with handler objects, having the handler type as key.
 
 `start(tubelist, ignoreDefault)`
@@ -255,7 +252,6 @@ var options = {
 	id: 'worker_4',
 	host: '127.0.0.1',
 	port: 11300,
-	logdir: "./logs",
 	handlers: handlerList,
 }
 var worker = new beanworker(options);
@@ -300,17 +296,13 @@ handlers:
     - "./handlers/holborn.js"
     - "./handlers/greenpark.js"
     - "./handlers/knightsbridge.js"
-logdir: "/path/to/log"
 ignoreDefault: true
 ```
 
 __beanstalkd__: where to connect  
 __watch__: a list of tubes to watch.  
 __handlers__: a list of handler files to require  
-__logdir__: path to the directory for worker logs  
 __ignoreDefault__: true if this worker should ignore the default tube
-
-You may omit the __logdir__ line to suppress logging to a file.
 
 If the handler paths don't start with `/` the current working directory will be prepended to them before they are required.
 

@@ -108,9 +108,6 @@ describe('FiveBeansClient', function()
 		{
 			consumer.list_tubes_watched(function(err, response)
 			{
-				console.log(err);
-				console.log(response);
-
 				should.not.exist(err);
 				response.length.should.equal(1);
 				response.indexOf(tube).should.equal(0);
@@ -232,7 +229,7 @@ describe('FiveBeansClient', function()
 			});
 		});
 
-		it('#peek_delayed returns data for a delayed job', function(done)
+		it('#peek_delayed() returns data for a delayed job', function(done)
 		{
 			producer.peek_delayed(function(err, jobid, payload)
 			{
@@ -241,7 +238,7 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#bury buries a job (> 1sec expected)', function(done)
+		it('#bury() buries a job (> 1sec expected)', function(done)
 		{
 			// this takes a second because of the minumum delay enforced by release() above
 			this.timeout(3000);
@@ -254,7 +251,7 @@ describe('FiveBeansClient', function()
 				});
 			});
 		});
-		it('#peek_buried returns data for a buried job', function(done)
+		it('#peek_buried() returns data for a buried job', function(done)
 		{
 			producer.peek_buried(function(err, jobid, payload)
 			{
@@ -263,7 +260,7 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#kick un-buries jobs in the producer\'s used queue', function(done)
+		it('#kick() un-buries jobs in the producer\'s used queue', function(done)
 		{
 			producer.kick(10, function(err, count)
 			{
@@ -272,7 +269,7 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#pause_tube suspends new job reservations (> 1sec expected)', function(done)
+		it('#pause_tube() suspends new job reservations (> 1sec expected)', function(done)
 		{
 			consumer.pause_tube(tube, 3, function(err)
 			{
@@ -284,7 +281,7 @@ describe('FiveBeansClient', function()
 				});
 			});
 		});
-		it('#destroy deletes a job (nearly 2 sec expected)', function(done)
+		it('#destroy() deletes a job (nearly 2 sec expected)', function(done)
 		{
 			// this takes a couple of seconds because of the minumum delay enforced by pause_tube() above
 			this.timeout(5000);
@@ -297,7 +294,7 @@ describe('FiveBeansClient', function()
 				});
 			});
 		});
-		it('#reserve_with_timeout times out when no jobs are waiting (> 1sec expected)', function(done)
+		it('#reserve_with_timeout() times out when no jobs are waiting (> 1sec expected)', function(done)
 		{
 			this.timeout(3000);
 			consumer.reserve_with_timeout(1, function(err, jobid, payload)
@@ -310,7 +307,7 @@ describe('FiveBeansClient', function()
 
 	describe('server statistics', function()
 	{
-		it('#stats returns a hash of server stats', function(done)
+		it('#stats() returns a hash of server stats', function(done)
 		{
 			consumer.stats(function(err, response)
 			{
@@ -320,7 +317,7 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#list_tubes returns a list of tubes', function(done)
+		it('#list_tubes() returns a list of tubes', function(done)
 		{
 			consumer.list_tubes(function(err, response)
 			{
@@ -330,7 +327,7 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#stats_tube returns a hash of tube stats', function(done)
+		it('#stats_tube() returns a hash of tube stats', function(done)
 		{
 			consumer.stats_tube(tube, function(err, response)
 			{
