@@ -197,6 +197,8 @@ The worker pulls jobs off the queue & passes them to matching handlers. It delet
 
 ### API
 
+#### constructor
+
 `new FiveBeansWorker(options)`
 
 Returns a new worker object. *options* is a hash containing the following keys:
@@ -207,17 +209,25 @@ __port__: beanstalkd port
 __handlers__: hash with handler objects, with handler types as keys  
 __ignoreDefault__: true if this worker should ignore the default tube
 
+#### start
+
 `start(tubelist)`
 
 Connect the worker to the beanstalkd server & make it watch the specified tubes. Emits the 'started' event when it is complete.
+
+#### stop
 
 `stop()`
 
 Finish processing the current job then close the client. Emits the 'stopped' event when complete.
 
+#### watch
+
 `watch(tubelist, callback)`
 
 Begin watching the tubes named in the list.
+
+#### ignore
 
 `ignore(tubelist, callback)`
 
@@ -228,25 +238,15 @@ Ignore the tubes named in the list.
 
 The worker is intended to continue processing jobs through most errors. Its response to exceptions encountered when processing jobs is to bury the job and emit an event that can be logged or handled somewhere else.
 
-`error`
+`error`: Emitted on error in the underlying client. Payload is the error object. Execution is halted. You must listen for this event.
 
-Emitted on error in the underlying client. Payload is the error object. Execution is halted. You must listen for this event.
+`close`: Emitted on close in the underlying client. No payload.
 
-`close`
+`started`: Worker has started processing. No payload.
 
-Emitted on close in the underlying client. No payload.
+`stopped`: Worker has stopped processing. No payload.
 
-`started`
-
-Worker has started processing. No payload.
-
-`stopped`
-
-Worker has stopped processing. No payload.
-
-`info`
-
-The worker has taken some action that you might want to log. The payload is an object with information about the action, with two fields:
+`info`: The worker has taken some action that you might want to log. The payload is an object with information about the action, with two fields:
 
 ```javascript
 {
@@ -257,9 +257,7 @@ The worker has taken some action that you might want to log. The payload is an o
 
 This event is the tattered remnants of what used to be built-in logging, and it might go away.
 
-`warning`
-
-The worker has encountered an error condition that will not stop processing, but that you might wish to act upon or log. The payload is an object with information about the error. Fields guaranteed to be present are:
+`warning`: The worker has encountered an error condition that will not stop processing, but that you might wish to act upon or log. The payload is an object with information about the error. Fields guaranteed to be present are:
 
 ```javascript
 {
@@ -271,13 +269,9 @@ The worker has encountered an error condition that will not stop processing, but
 
 Some errors might have additional fields providing context, such as a job id.
 
-`job.reserved`
+`job.reserved`: The worker has reserved a job. The payload is the job id.
 
-The worker has reserved a job. The payload is the job id.
-
-`job.handled`
-
-The worker has completed processing a job. The payload is an object with information about the job.
+`job.handled`: The worker has completed processing a job. The payload is an object with information about the job.
 
 ```javascript
 {
@@ -288,13 +282,9 @@ The worker has completed processing a job. The payload is an object with informa
 }
 ```
 
-`job.deleted`
+`job.deleted`: The worker has deleted a job. The payload is the job id.
 
-The worker has deleted a job. The payload is the job id.
-
-`job.buried`
-
-The worker has buried a job. The payload is the job id.
+`job.buried`: The worker has buried a job. The payload is the job id.
 
 ### Jobs
 
