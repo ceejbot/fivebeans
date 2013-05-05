@@ -1,7 +1,12 @@
 var should = require('chai').should();
 
 var fivebeans = require('../fivebeans'),
-	fs = require('fs')
+	fs = require('fs'),
+	sinon = require('sinon'),
+	net = require('net'),
+	events = require('events'),
+	stream = require('stream'),
+	semver = require('semver')
 	;
 
 var host = '127.0.0.1';
@@ -18,11 +23,71 @@ describe('FiveBeansClient', function()
 	var producer = null;
 	var consumer = null;
 	var testjobid = null;
+	var stub;
+	var useDuplexStream = false;
 
 	before(function()
 	{
 		producer = new fivebeans.client(host);
 		consumer = new fivebeans.client(host, port);
+
+		useDuplexStream = semver.gte(process.version, 'v0.10.0');
+	});
+
+	beforeEach(function(done)
+	{
+		// For now, don't monkey with the stream on earlier nodes.
+		if (!useDuplexStream)
+			return done();
+
+		stub = sinon.stub(net, 'createConnection', function(port, host)
+		{
+			stub.restore();
+			var dataChunker = net.createConnection(port, host);
+
+			// Insert our chunking stream in between the client & the server.
+			var proxy = new stream.Duplex();
+			proxy._read = function(size)
+			{
+				return dataChunker.read(size);
+			};
+			proxy._write = function(chunk, encoding, callback)
+			{
+				return dataChunker.write(chunk, encoding, callback);
+			};
+
+			dataChunker.on('data', function(data)
+			{
+				var midpoint = Math.floor(data.length / 2);
+				proxy.emit('data', data.slice(0, midpoint));
+				proxy.emit('data', data.slice(midpoint));
+			});
+
+			dataChunker.on('connect', function()
+			{
+				proxy.emit('connect');
+			});
+
+			dataChunker.on('error', function(err)
+			{
+				proxy.emit('error', err);
+			});
+
+			dataChunker.on('close', function(err)
+			{
+				proxy.emit('close', err);
+			});
+
+			return proxy;
+		});
+
+		done();
+	});
+
+	afterEach(function()
+	{
+		if (stub)
+			stub.restore();
 	});
 
 	describe('#FiveBeansClient()', function()

@@ -10,7 +10,7 @@
                         "optimist": "*",
                         "winston": "*"
                       },
-  "devDependencies" : { "mocha": "*", "chai": "*", "sinon": "*"},
+  "devDependencies" : { "mocha": "*", "chai": "*", "sinon": "*", "semver": "*"},
   "repository"      : { "type": "git",
                         "url" : "git://github.com/ceejbot/fivebeans.git" },
   "bugs"            : "http://github.com/ceejbot/fivebeans/issues",
