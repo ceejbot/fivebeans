@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Fivebeans by ceejbot</title>
-    
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
@@ -17,11 +16,14 @@
       <header>
         <h1>Fivebeans</h1>
         <p>A beanstalkd client for node.js &amp; a simple framework for running beanstalkd workers.</p>
+
         <p class="view"><a href="https://github.com/ceejbot/fivebeans">View the Project on GitHub <small>ceejbot/fivebeans</small></a></p>
+
+
         <ul>
           <li><a href="https://github.com/ceejbot/fivebeans/zipball/master">Download <strong>ZIP File</strong></a></li>
           <li><a href="https://github.com/ceejbot/fivebeans/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/ceejbot/fivebeans">Fork On <strong>GitHub</strong></a></li>
+          <li><a href="https://github.com/ceejbot/fivebeans">View On <strong>GitHub</strong></a></li>
         </ul>
       </header>
       <section>
@@ -31,22 +33,27 @@
 
 <p>Heavily inspired by <a href="https://github.com/benlund/node-beanstalk-client">node-beanstalk-client</a>, which is a perfectly usable client but somewhat dusty. I wanted more complete support of the beanstalkd protocol in a project written in plain javascript.</p>
 
-<p>All client method names are the same case &amp; spelling as the beanstalk text command, with hyphens replaced by underscore. </p>
+<p>All client method names are the same case &amp; spelling as the beanstalk text command, with hyphens replaced by underscore. The single exception is "delete", which is renamed to "destroy".</p>
 
 <p>For complete details on the beanstalkd commands, see <a href="https://github.com/kr/beanstalkd/blob/master/doc/protocol.txt">its protocol documentation</a>.</p>
 
 <h3>Creating a client</h3>
 
-<div class="highlight">
-<pre><span class="kd">var</span> <span class="nx">fivebeans</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fivebeans'</span><span class="p">);</span>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">fivebeans</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fivebeans'</span><span class="p">);</span>
 <span class="kd">var</span> <span class="nx">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">fivebeans</span><span class="p">.</span><span class="nx">client</span><span class="p">(</span><span class="s1">'10.0.1.1'</span><span class="p">,</span> <span class="mi">11300</span><span class="p">);</span>
-</pre>
-</div>
-
+<span class="nx">client</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// client can now be used</span>
+<span class="p">});</span>
+</pre></div>
 
 <p>The constructor takes two arguments: </p>
 
 <p><strong>host</strong>: The address of the beanstalkd server. Defaults to <code>127.0.0.1</code>.<br><strong>port</strong>: Port to connect to. Defaults to <code>11300</code>.</p>
+
+<p><code>connect</code> takes one callback argument. Its <code>err</code> parameter is <code>null</code> when the the client has connected to beanstalkd, an error object when a connection error has occurred, or <code>false</code> when the connection has been closed.</p>
+
+<p>Be aware: after connecting, the callback will be called again if a connection error occurs or the server disconnects!</p>
 
 <h3>Producing jobs</h3>
 
@@ -66,25 +73,25 @@
 
 <p><code>client.put(priority, delay, ttr, payload, function(err, jobid) {});</code></p>
 
-<p>Submit a job with the specified priority (smaller integers are higher priority), delay in seconds, and allowed time-to-run in seconds. The payload contains the job data the server will return to clients reserving jobs. No processing is done on the data. Responds with the id of the newly-created job.</p>
+<p>Submit a job with the specified priority (smaller integers are higher priority), delay in seconds, and allowed time-to-run in seconds. The payload contains the job data the server will return to clients reserving jobs; it can be either a Buffer object or a string. No processing is done on the data. Responds with the id of the newly-created job.</p>
 
 <h4>peek_ready</h4>
 
 <p><code>client.peek_ready(function(err, jobid, payload) {});</code></p>
 
-<p>Peek at the data for the job at the top of the ready queue of the tube currently in use. Responds with the job id and payload of the next job, or 'NOT_FOUND' if there are no qualifying jobs in the tube.</p>
+<p>Peek at the data for the job at the top of the ready queue of the tube currently in use. Responds with the job id and payload of the next job, or 'NOT_FOUND' if there are no qualifying jobs in the tube. The payload is a Buffer object.</p>
 
 <h4>peek_delayed</h4>
 
 <p><code>client.peek_delayed(function(err, jobid, payload) {});</code></p>
 
-<p>Peek at the data for the delayed job with the shortest delay in the tube currently in use. Responds with the job id and payload of the next job, or 'NOT_FOUND' if there are no qualifying jobs in the tube.</p>
+<p>Peek at the data for the delayed job with the shortest delay in the tube currently in use. Responds with the job id and payload of the next job, or 'NOT_FOUND' if there are no qualifying jobs in the tube. The payload is a Buffer object.</p>
 
 <h4>peek_buried</h4>
 
 <p><code>client.peek_buried(function(err, jobid, payload) {});</code></p>
 
-<p>Peek at the data for the next buried job in the tube currently in use. Responds with the job id and payload of the next job, or 'NOT_FOUND' if there are no qualifying jobs in the tube.</p>
+<p>Peek at the data for the next buried job in the tube currently in use. Responds with the job id and payload of the next job, or 'NOT_FOUND' if there are no qualifying jobs in the tube. The payload is a Buffer object.</p>
 
 <h3>Consuming jobs</h3>
 
@@ -110,13 +117,13 @@
 
 <p><code>client.reserve(function(err, jobid, payload) {});</code></p>
 
-<p>Reserve a job. Responds with the id and the job data. The data is passed through untouched.</p>
+<p>Reserve a job. Responds with the id and the job data. The payload is a Buffer object.</p>
 
 <h4>reserve_with_timeout</h4>
 
 <p><code>client.reserve_with_timeout(seconds, function(err, jobid, payload) {});</code></p>
 
-<p>Reserve a job, waiting the specified number of seconds before timing out. <em>err</em> contains the string "TIMED_OUT" if the specified time elapsed before a job became available.</p>
+<p>Reserve a job, waiting the specified number of seconds before timing out. <em>err</em> contains the string "TIMED_OUT" if the specified time elapsed before a job became available. Payload is a buffer.</p>
 
 <h4>touch</h4>
 
@@ -154,7 +161,7 @@
 
 <p><code>client.peek(id, function(err, jobid, payload) {});</code></p>
 
-<p>Peek at the data for the specified job.</p>
+<p>Peek at the data for the specified job. Payload is a Buffer object.</p>
 
 <h4>pause_tube</h4>
 
@@ -205,7 +212,7 @@ but updated &amp; rewritten to work with jobs queued by <a href="https://github.
 
 <p>The worker looks up a handler using the given type string and calls work() on the job payload.</p>
 
-<p>Handler modules must export a field called 'type' with a brief descriptive string. They must also export a method called work() with this signature:</p>
+<p>Handler modules must export a single function that returns an object. The object must have a field called 'type' with a brief descriptive string. It must also expose a function called work() with this signature:</p>
 
 <p><code>work(jobdata, callback(action, delay))</code></p>
 
@@ -213,7 +220,32 @@ but updated &amp; rewritten to work with jobs queued by <a href="https://github.
 
 <p>If the <em>action</em> is "success", the job is deleted. If it is "release", the job is released with the specified delay. If it is "bury", the job is buried. All other actions are treated as errors &amp; the job is buried in response.</p>
 
-<p>Handlers are extended with <a href="https://github.com/flatiron/winston">winston</a> logging functions before they're used. This gives you access to each worker's logger inside your handlers. From within work(), call logging methods on <code>this</code>. </p>
+<p>When the worker loads its handlers, it sets a <code>logger</code> field on each to its own logger object. Handlers may therefore call winston logging methods on <code>this.logger</code> in their work methods. </p>
+
+<p>Here's a simple handler example.</p>
+
+<div class="highlight"><pre><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kd">function</span> <span class="nx">EmitKeysHandler</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="s1">'emitkeys'</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nx">EmitKeysHandler</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">work</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">payload</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">keys</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">payload</span><span class="p">);</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">keys</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="nx">keys</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="s1">'success'</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">var</span> <span class="nx">handler</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">EmitKeysHandler</span><span class="p">();</span>
+    <span class="k">return</span> <span class="nx">handler</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+
+<p>The <a href="fivebeans/examples">examples</a> directory has another sample handler.</p>
+
 
 <h3>API</h3>
 
@@ -221,7 +253,7 @@ but updated &amp; rewritten to work with jobs queued by <a href="https://github.
 
 <p>Returns a new worker object. <em>options</em> is a hash containing the following keys:</p>
 
-<p><strong>id</strong>: how this worker should identify itself in logs<br><strong>host</strong>: beanstalkd host<br><strong>port</strong>: beanstalkd port<br><strong>logdir</strong>: directory for log files<br><strong>handlers</strong>: list of handler objects; see above</p>
+<p><strong>id</strong>: how this worker should identify itself in logs<br><strong>host</strong>: beanstalkd host<br><strong>port</strong>: beanstalkd port<br><strong>logdir</strong>: directory for log files<br><strong>handlers</strong>: object with handler objects, having the handler type as key.</p>
 
 <p><code>start(tubelist, ignoreDefault)</code></p>
 
@@ -229,9 +261,12 @@ but updated &amp; rewritten to work with jobs queued by <a href="https://github.
 
 <h3>Example</h3>
 
-<div class="highlight">
-<pre>
-<span class="kd">var</span> <span class="nx">beanworker</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fivebeans'</span><span class="p">).</span><span class="nx">worker</span><span class="p">;</span>
+<p>This example starts a worker, capable of handling the <code>emitkeys</code> example from above.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">beanworker</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fivebeans'</span><span class="p">).</span><span class="nx">worker</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">handlerList</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">emitkeys</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'./emitkeyshandler'</span><span class="p">);</span>
+<span class="p">}</span>
 <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
     <span class="nx">id</span><span class="o">:</span> <span class="s1">'worker_4'</span><span class="p">,</span> 
     <span class="nx">host</span><span class="o">:</span> <span class="s1">'127.0.0.1'</span><span class="p">,</span>
@@ -242,9 +277,7 @@ but updated &amp; rewritten to work with jobs queued by <a href="https://github.
 <span class="kd">var</span> <span class="nx">worker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">beanworker</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
 <span class="nx">worker</span><span class="p">.</span><span class="nx">start</span><span class="p">([</span><span class="s1">'high'</span><span class="p">,</span> <span class="s1">'medium'</span><span class="p">,</span> <span class="s1">'low'</span><span class="p">],</span> <span class="kc">true</span><span class="p">);</span>
 <span class="k">return</span> <span class="nx">worker</span><span class="p">;</span>
-</pre>
-</div>
-
+</pre></div>
 
 <h2>FiveBeansRunner</h2>
 
@@ -252,13 +285,10 @@ but updated &amp; rewritten to work with jobs queued by <a href="https://github.
 
 <p>Example use:</p>
 
-<div class="highlight">
-<pre><span class="kd">var</span> <span class="nx">fivebeans</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fivebeans'</span><span class="p">);</span>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">fivebeans</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fivebeans'</span><span class="p">);</span>
 <span class="kd">var</span> <span class="nx">runner</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">fivebeans</span><span class="p">.</span><span class="nx">runner</span><span class="p">(</span><span class="s1">'worker_id_1'</span><span class="p">,</span> <span class="s1">'/path/to/config.yml'</span><span class="p">);</span>
 <span class="nx">runner</span><span class="p">.</span><span class="nx">go</span><span class="p">();</span>
-</pre>
-</div>
-
+</pre></div>
 
 <h3>bin/beanworker</h3>
 
@@ -272,8 +302,7 @@ but updated &amp; rewritten to work with jobs queued by <a href="https://github.
 
 <p>Here's an example yaml configuration:</p>
 
-<div class="highlight">
-<pre><span class="l-Scalar-Plain">beanstalkd</span><span class="p-Indicator">:</span>
+<div class="highlight"><pre><span class="l-Scalar-Plain">beanstalkd</span><span class="p-Indicator">:</span>
     <span class="l-Scalar-Plain">host</span><span class="p-Indicator">:</span> <span class="s">"127.0.0.1"</span>
     <span class="l-Scalar-Plain">port</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">11300</span>
 <span class="l-Scalar-Plain">watch</span><span class="p-Indicator">:</span>
@@ -287,9 +316,7 @@ but updated &amp; rewritten to work with jobs queued by <a href="https://github.
     <span class="p-Indicator">-</span> <span class="s">"./handlers/knightsbridge.js"</span>
 <span class="l-Scalar-Plain">logdir</span><span class="p-Indicator">:</span> <span class="s">"/path/to/log"</span>
 <span class="l-Scalar-Plain">ignoreDefault</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">true</span>
-</pre>
-</div>
-
+</pre></div>
 
 <p><strong>beanstalkd</strong>: where to connect<br><strong>watch</strong>: a list of tubes to watch.<br><strong>handlers</strong>: a list of handler files to require<br><strong>logdir</strong>: path to the directory for worker logs<br><strong>ignoreDefault</strong>: true if this worker should ignore the default tube</p>
 
@@ -301,7 +328,7 @@ but updated &amp; rewritten to work with jobs queued by <a href="https://github.
 
 <ul>
 <li><p>Handle DEADLINE_SOON from the server.  </p></li>
-<li><p>Hacky manner of exposing logging to the job handlers is hacky. Also too tied to the specific logging engine. Replace.</p></li>
+<li><p>Write proper unit tests for the worker/runner/handler interaction.</p></li>
 </ul>
       </section>
       <footer>
@@ -310,5 +337,6 @@ but updated &amp; rewritten to work with jobs queued by <a href="https://github.
       </footer>
     </div>
     <script src="javascripts/scale.fix.js"></script>
+
   </body>
 </html>
