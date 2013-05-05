@@ -248,6 +248,7 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
+
 		it('#bury() buries a job (> 1sec expected)', function(done)
 		{
 			// this takes a second because of the minumum delay enforced by release() above
@@ -261,6 +262,7 @@ describe('FiveBeansClient', function()
 				});
 			});
 		});
+
 		it('#peek_buried() returns data for a buried job', function(done)
 		{
 			producer.peek_buried(function(err, jobid, payload)
@@ -291,6 +293,7 @@ describe('FiveBeansClient', function()
 				});
 			});
 		});
+
 		it('#destroy() deletes a job (nearly 2 sec expected)', function(done)
 		{
 			// this takes a couple of seconds because of the minumum delay enforced by pause_tube() above
@@ -304,6 +307,7 @@ describe('FiveBeansClient', function()
 				});
 			});
 		});
+
 		it('#reserve_with_timeout() times out when no jobs are waiting (> 1sec expected)', function(done)
 		{
 			this.timeout(3000);
@@ -327,6 +331,7 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
+
 		it('#list_tubes() returns a list of tubes', function(done)
 		{
 			consumer.list_tubes(function(err, response)
@@ -337,6 +342,7 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
+
 		it('#stats_tube() returns a hash of tube stats', function(done)
 		{
 			consumer.stats_tube(tube, function(err, response)
@@ -345,6 +351,7 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
+
 		it('#stats_tube() returns not found for non-existent tubes', function(done)
 		{
 			consumer.stats_tube('i-dont-exist', function(err, response)
