@@ -272,6 +272,7 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
+
 		it('#kick() un-buries jobs in the producer\'s used queue', function(done)
 		{
 			producer.kick(10, function(err, count)
@@ -281,6 +282,24 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
+
+		it('#kick_job() kicks a specific job id', function(done)
+		{
+			consumer.reserve(function(err, jobid, payload)
+			{
+				consumer.bury(testjobid, fivebeans.LOWEST_PRIORITY, function(err)
+				{
+					should.not.exist(err);
+
+					producer.kick_job(testjobid, function(err)
+					{
+						should.not.exist(err);
+						done();
+					});
+				});
+			});
+		});
+
 		it('#pause_tube() suspends new job reservations (> 1sec expected)', function(done)
 		{
 			consumer.pause_tube(tube, 3, function(err)

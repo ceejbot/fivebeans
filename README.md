@@ -8,7 +8,7 @@ Heavily inspired by [node-beanstalk-client](https://github.com/benlund/node-bean
 
 All client method names are the same case & spelling as the beanstalk text command, with hyphens replaced by underscore. The single exception is "delete", which is renamed to "destroy".
 
-For complete details on the beanstalkd commands, see [its protocol documentation](https://github.com/kr/beanstalkd/blob/master/doc/protocol.txt).
+For complete details on the beanstalkd commands, see [its protocol documentation](https://github.com/kr/beanstalkd/blob/master/doc/protocol.md).
 
 ### Creating a client
 
@@ -129,6 +129,12 @@ Bury the specified job and assign it the given priority. Responds with null if s
 `client.kick(maxToKick, function(err, numkicked) {});`
 
 Kick at most *maxToKick* delayed and buried jobs back into the active queue. Responds with the number of jobs kicked.
+
+#### kick_job
+
+`client.kick_job(jobID, function(err) {});`
+
+Kick the specified job id. Responds with `NOT_FOUND` if the job was not found.
 
 ### Server statistics
 

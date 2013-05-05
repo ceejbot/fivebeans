@@ -21,7 +21,7 @@ util.inherits(TestHandler, events.EventEmitter);
 TestHandler.prototype.work = function(payload, callback)
 {
 	this.emit('result', this.reverseWords(payload));
-	callback(payload, 20);
+	callback(payload, 1);
 };
 
 TestHandler.prototype.reverseWords = function(input)
@@ -306,7 +306,6 @@ describe('FiveBeansWorker', function()
 
 		it('buries jobs when the handler responds with "bury"', function(done)
 		{
-			this.timeout(10000);
 			function detectBuried(jobid)
 			{
 				producer.peek_buried(function(err, buriedID, payload)
@@ -335,7 +334,6 @@ describe('FiveBeansWorker', function()
 
 		it('handles jobs that contain arrays (for ruby compatibility)', function(done)
 		{
-			this.timeout(10000);
 			function detectDeleted(jobid)
 			{
 				worker.removeListener('job.deleted', detectDeleted);
