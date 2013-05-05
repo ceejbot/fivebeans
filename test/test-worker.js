@@ -306,6 +306,7 @@ describe('FiveBeansWorker', function()
 
 		it('buries jobs when the handler responds with "bury"', function(done)
 		{
+			this.timeout(10000);
 			function detectBuried(jobid)
 			{
 				producer.peek_buried(function(err, buriedID, payload)
@@ -334,6 +335,7 @@ describe('FiveBeansWorker', function()
 
 		it('handles jobs that contain arrays (for ruby compatibility)', function(done)
 		{
+			this.timeout(10000);
 			function detectDeleted(jobid)
 			{
 				worker.removeListener('job.deleted', detectDeleted);
