@@ -2,14 +2,13 @@
 
 var
 	should    = require('chai').should(),
+	events    = require('events'),
 	fivebeans = require('../index'),
 	fs        = require('fs')
 	;
 
-var host = '127.0.0.1';
-var port = 11300;
-var tube = 'testtube';
-
+//-------------------------------------------------------------
+// some job handlers for testing
 
 function StringReverser()
 {
@@ -18,6 +17,7 @@ function StringReverser()
 
 StringReverser.prototype.work = function(payload, callback)
 {
+	this.reverseString(payload);
 	callback('success');
 };
 
@@ -28,13 +28,18 @@ StringReverser.prototype.reverseString = function(input)
 	return letters.join('');
 };
 
-
 var joblist =
 [
 	{ type: 'reverse', payload: 'madam, I\'m Adam' },
 	{ type: 'reverse', payload: 'satan oscillate my metallic sonatas' },
-	{ type: 'reverse', payload: 'able was I ere I saw Elba' }
+	{ type: 'reverse', payload: 'able was I ere I saw Elba' },
 ];
+
+//-------------------------------------------------------------
+
+var host = '127.0.0.1';
+var port = 11300;
+var tube = 'testtube';
 
 var testopts =
 {
@@ -44,17 +49,27 @@ var testopts =
 	ignoreDefault: true,
 	handlers:
 	{
-		reverse: StringReverser
+		reverse: new StringReverser(),
 	}
 };
+
+//-------------------------------------------------------------
 
 describe('FiveBeansWorker', function()
 {
 	var producer, worker, testjobid;
 
-	before(function()
+	before(function(done)
 	{
 		producer = new fivebeans.client(host, port);
+		producer.on('connect', function()
+		{
+			producer.use(tube, function(err, resp)
+			{
+				done();
+			});
+		});
+		producer.connect();
 	});
 
 	describe('constructor', function()
@@ -82,11 +97,25 @@ describe('FiveBeansWorker', function()
 		});
 	});
 
-	describe('start()', function()
+	describe('starting & stopping', function()
 	{
+		var w;
+
+		it('emits the error event on failure', function(done)
+		{
+			w = new fivebeans.worker({id: 'fail', port: 5000});
+			w.on('error', function(err)
+			{
+				err.should.be.ok;
+				err.errno.should.equal('ECONNREFUSED');
+				done();
+			});
+			w.start();
+		});
+
 		it('emits the started event on success', function(done)
 		{
-			var w = new fivebeans.worker(testopts);
+			w = new fivebeans.worker(testopts);
 			w.on('started', function()
 			{
 				done();
@@ -97,22 +126,33 @@ describe('FiveBeansWorker', function()
 			w.start();
 		});
 
-		it('emits the error event on failure', function(done)
+		it('stops and cleans up when stopped', function(done)
 		{
-			var w = new fivebeans.worker({id: 'fail', port: 5000});
-			w.on('error', function(err)
+			this.timeout(5000);
+			w.on('stopped', function()
 			{
-				err.should.be.ok;
-				err.errno.should.equal('ECONNREFUSED');
+				w.stopped.should.equal(true);
 				done();
 			});
-			w.start();
+
+			w.stop();
 		});
+
 	});
 
 	describe('watch', function()
 	{
+		it('watches tubes on start', function(done)
+		{
+			worker = new fivebeans.worker(testopts);
+			worker.on('started', function()
+			{
+				// check to see if it's watching testtube
+				done();
+			});
 
+			worker.start([tube]);
+		});
 	});
 
 	describe('log events', function()
