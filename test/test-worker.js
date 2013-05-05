@@ -192,6 +192,33 @@ describe('FiveBeansWorker', function()
 			});
 		});
 
+		it('buries jobs with bad json', function(done)
+		{
+			this.timeout(5000);
+
+			producer.put(0, 0, 60, "{ I am invalid JSON", function(err, jobid)
+			{
+				should.not.exist(err);
+				jobid.should.be.ok;
+
+				function detectBuried()
+				{
+					producer.peek_buried(function(err, buriedID, payload)
+					{
+						should.not.exist(err);
+						buriedID.should.equal(jobid);
+						producer.destroy(buriedID, function(err)
+						{
+							should.not.exist(err);
+							done();
+						});
+					});
+				}
+
+				setTimeout(detectBuried, 500);
+			});
+		});
+
 		it('buries jobs for which it has no handler', function(done)
 		{
 			this.timeout(5000);
@@ -297,10 +324,30 @@ describe('FiveBeansWorker', function()
 				}
 
 				// sadly this test is sensitive to this timeout
-				setTimeout(detectBuried, 1000);
+				setTimeout(detectBuried, 2000);
 			});
 		});
 
+		it('handles jobs that contain arrays (for ruby compatibility)', function(done)
+		{
+			var job = ['stalker', { type: 'reverse', payload: 'success'}];
+			var handler = testopts.handlers.reverse;
+
+			function verifyResult(item)
+			{
+				item.should.be.ok;
+				item.should.equal('success');
+				handler.removeListener('result', verifyResult);
+				done();
+			}
+
+			handler.on('result', verifyResult);
+			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
+			{
+				should.not.exist(err);
+				jobid.should.be.ok;
+			});
+		});
 
 	});
 
