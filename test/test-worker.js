@@ -4,28 +4,31 @@ var
 	should    = require('chai').should(),
 	events    = require('events'),
 	fivebeans = require('../index'),
-	fs        = require('fs')
+	fs        = require('fs'),
+	util      = require('util')
 	;
 
 //-------------------------------------------------------------
 // some job handlers for testing
 
-function StringReverser()
+function TestHandler()
 {
+	events.EventEmitter.call(this);
 	this.type = 'reverse';
 }
+util.inherits(TestHandler, events.EventEmitter);
 
-StringReverser.prototype.work = function(payload, callback)
+TestHandler.prototype.work = function(payload, callback)
 {
-	this.reverseString(payload);
-	callback('success');
+	this.emit('result', this.reverseWords(payload));
+	callback(payload, 1);
 };
 
-StringReverser.prototype.reverseString = function(input)
+TestHandler.prototype.reverseWords = function(input)
 {
-	var letters = input.split('');
-	letters.reverse();
-	return letters.join('');
+	var words = input.split(' ');
+	words.reverse();
+	return words.join('');
 };
 
 var joblist =
@@ -49,7 +52,7 @@ var testopts =
 	ignoreDefault: true,
 	handlers:
 	{
-		reverse: new StringReverser(),
+		reverse: new TestHandler(),
 	}
 };
 
@@ -140,19 +143,165 @@ describe('FiveBeansWorker', function()
 
 	});
 
-	describe('watch', function()
+	describe('job processing', function()
 	{
 		it('watches tubes on start', function(done)
 		{
 			worker = new fivebeans.worker(testopts);
-			worker.on('started', function()
-			{
-				// check to see if it's watching testtube
-				done();
-			});
 
+			function handleStart()
+			{
+				worker.client.list_tubes_watched(function(err, response)
+				{
+					should.not.exist(err);
+					response.should.be.an('array');
+					response.length.should.equal(1);
+					response.indexOf(tube).should.equal(0);
+
+					worker.removeListener('started', handleStart);
+
+					done();
+				});
+			}
+
+			worker.on('started', handleStart);
 			worker.start([tube]);
 		});
+
+		it('deletes jobs with bad formats', function(done)
+		{
+			this.timeout(5000);
+
+			var job = { format: 'bad'};
+			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
+			{
+				should.not.exist(err);
+				jobid.should.be.ok;
+
+				function detectReady()
+				{
+					producer.peek_ready(function(err, jobid, payload)
+					{
+						err.should.be.ok;
+						err.should.equal('NOT_FOUND');
+						done();
+					});
+				}
+
+				setTimeout(detectReady, 500);
+			});
+		});
+
+		it('buries jobs for which it has no handler', function(done)
+		{
+			this.timeout(5000);
+
+			var job = { type: 'unknown', payload: 'extremely important!'};
+			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
+			{
+				should.not.exist(err);
+				jobid.should.be.ok;
+
+				function detectBuried()
+				{
+					producer.peek_buried(function(err, buriedID, payload)
+					{
+						should.not.exist(err);
+						buriedID.should.equal(jobid);
+						producer.destroy(buriedID, function(err)
+						{
+							should.not.exist(err);
+							done();
+						});
+					});
+				}
+
+				setTimeout(detectBuried, 500);
+			});
+		});
+
+		it('passes good jobs to handlers', function(done)
+		{
+			var handler = testopts.handlers.reverse;
+
+			function verifyResult(item)
+			{
+				item.should.be.ok;
+				item.should.equal('success');
+				handler.removeListener('result', verifyResult);
+				done();
+			}
+
+			handler.on('result', verifyResult);
+			var job = { type: 'reverse', payload: 'success'};
+			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
+			{
+				should.not.exist(err);
+				jobid.should.be.ok;
+			});
+		});
+
+		it('releases jobs when the handler responds with "release"', function(done)
+		{
+			this.timeout(5000);
+
+			var job = { type: 'reverse', payload: 'release'};
+			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
+			{
+				should.not.exist(err);
+				jobid.should.be.ok;
+
+				function detectReady()
+				{
+					producer.peek_delayed(function(err, id)
+					{
+						should.not.exist(err);
+						id.should.equal(jobid);
+						producer.destroy(jobid, function(err)
+						{
+							should.not.exist(err);
+							worker.removeListener('stopped', detectReady);
+							worker.start([tube]);
+							done();
+						});
+					});
+				}
+
+				worker.on('stopped', detectReady);
+				worker.stop();
+			});
+		});
+
+		it('buries jobs when the handler responds with "bury"', function(done)
+		{
+			this.timeout(5000);
+
+			var job = { type: 'reverse', payload: 'bury'};
+			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
+			{
+				should.not.exist(err);
+				jobid.should.be.ok;
+
+				function detectBuried()
+				{
+					producer.peek_buried(function(err, buriedID, payload)
+					{
+						should.not.exist(err);
+						buriedID.should.equal(jobid);
+						producer.destroy(buriedID, function(err)
+						{
+							should.not.exist(err);
+							done();
+						});
+					});
+				}
+
+				// sadly this test is sensitive to this timeout
+				setTimeout(detectBuried, 1000);
+			});
+		});
+
+
 	});
 
 	describe('log events', function()
@@ -160,9 +309,10 @@ describe('FiveBeansWorker', function()
 
 	});
 
-	after(function()
+	after(function(done)
 	{
-
+		worker.stop();
+		done();
 	});
 
 });
