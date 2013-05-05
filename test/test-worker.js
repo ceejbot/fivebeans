@@ -157,8 +157,8 @@ describe('FiveBeansWorker', function()
 				{
 					should.not.exist(err);
 					response.should.be.an('array');
-					response.length.should.equal(1);
-					response.indexOf(tube).should.equal(0);
+					response.length.should.equal(2);
+					response.indexOf(tube).should.be.above(-1);
 
 					worker.removeListener('started', handleStart);
 
@@ -167,7 +167,7 @@ describe('FiveBeansWorker', function()
 			}
 
 			worker.on('started', handleStart);
-			worker.start([tube]);
+			worker.start([tube, 'unused']);
 		});
 
 		it('deletes jobs with bad formats', function(done)

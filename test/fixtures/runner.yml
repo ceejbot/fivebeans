@@ -2,8 +2,8 @@ beanstalkd:
     host: "localhost"
     port: 11300
 handlers:
-    - "./handlers/emitkeys.js"
-    - "./handlers/reverse.js"
+    - "./test/fixtures/emitkeys.js"
+    - "./test/fixtures/reverse.js"
 watch:
     - 'testtube'
 ignoreDefault: true

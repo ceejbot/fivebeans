@@ -32,6 +32,6 @@
 			"pattern": "//^((?!\/node_modules|test|examples\/).)*$/ig",
 			"onlyCwd": true
 		},
-		"travis-cov": { "threshold": 50 }
+		"travis-cov": { "threshold": 90 }
 	}
 }
