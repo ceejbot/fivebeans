@@ -73,7 +73,9 @@ describe('FiveBeansClient', function()
 
 	afterEach(function(done)
 	{
-		stub.restore();
+		if (stub) {
+			stub.restore();
+		}
 		done();
 	})
 
