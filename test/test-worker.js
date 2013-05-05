@@ -278,19 +278,35 @@ describe('FiveBeansWorker', function()
 				should.not.exist(err);
 				jobid.should.be.ok;
 
+				function destroyIt()
+				{
+					producer.destroy(jobid, function(err)
+					{
+						should.not.exist(err);
+						worker.removeListener('stopped', detectReady);
+						worker.start([tube]);
+						done();
+					});
+				}
+
 				function detectReady()
 				{
 					producer.peek_delayed(function(err, id)
 					{
-						should.not.exist(err);
-						id.should.equal(jobid);
-						producer.destroy(jobid, function(err)
+						if (err)
 						{
-							should.not.exist(err);
-							worker.removeListener('stopped', detectReady);
-							worker.start([tube]);
-							done();
-						});
+							producer.peek_ready(function(err, id)
+							{
+								should.not.exist(err);
+								id.should.equal(jobid);
+								destroyIt();
+							});
+						}
+						else
+						{
+							id.should.equal(jobid);
+							destroyIt();
+						}
 					});
 				}
 
@@ -330,6 +346,8 @@ describe('FiveBeansWorker', function()
 
 		it('handles jobs that contain arrays (for ruby compatibility)', function(done)
 		{
+			this.timeout(5000);
+
 			var job = ['stalker', { type: 'reverse', payload: 'success'}];
 			var handler = testopts.handlers.reverse;
 
