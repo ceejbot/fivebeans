@@ -1,7 +1,8 @@
 var should = require('chai').should();
 
 var fivebeans = require('../fivebeans'),
-	fs = require('fs')
+	fs = require('fs'),
+	semver = require('semver')
 	;
 
 var host = '127.0.0.1';
@@ -18,12 +19,65 @@ describe('FiveBeansClient', function()
 	var producer = null;
 	var consumer = null;
 	var testjobid = null;
+	var stub = null;
 
 	before(function()
 	{
 		producer = new fivebeans.client(host);
 		consumer = new fivebeans.client(host, port);
 	});
+
+	beforeEach(function(done)
+	{
+		// Only support node >= 0.10
+		if(!semver.gte(process.version, 'v0.10.0')) return done();
+
+		// Mock up the server connection
+		var sinon = require('sinon');
+		var net = require('net');
+		var events = require('events');
+		var stream = require('stream');
+
+		stub = sinon.stub(net, 'createConnection', function(port, host) {
+			stub.restore();
+
+			var strm = net.createConnection(port, host);
+
+			var ee = new stream.Duplex();
+			ee._read = function(size) {
+				return strm.read(size);
+			};
+			ee._write = function(chunk, encoding, callback) {
+				return strm.write(chunk, encoding, callback);
+			};
+
+			strm.on('data', function(data) {
+				var half = data.length / 2;
+				ee.emit('data', data.slice(0, half));
+				ee.emit('data', data.slice(half));
+			});
+			strm.on('connect', function() {
+				ee.emit('connect');
+			});
+			strm.on('error', function(err) {
+				ee.emit('error', err);
+			});
+			strm.on('close', function(err) {
+				ee.emit('close', err);
+			});
+			return ee;
+		});
+
+		done();
+	});
+
+	afterEach(function(done)
+	{
+		if (stub) {
+			stub.restore();
+		}
+		done();
+	})
 
 	describe('#FiveBeansClient()', function()
 	{

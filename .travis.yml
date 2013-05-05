@@ -1,7 +1,7 @@
 language: node_js
 node_js:
-    - 0.8.x
-    - 0.10.x
+    - "0.8"
+    - "0.10"
 before_install:
     - sudo apt-get update -qq
     - sudo apt-get install -qq beanstalkd
