@@ -21,7 +21,7 @@ util.inherits(TestHandler, events.EventEmitter);
 TestHandler.prototype.work = function(payload, callback)
 {
 	this.emit('result', this.reverseWords(payload));
-	callback(payload, 1);
+	callback(payload, 0);
 };
 
 TestHandler.prototype.reverseWords = function(input)
@@ -315,26 +315,19 @@ describe('FiveBeansWorker', function()
 
 		it('releases jobs when the handler responds with "release"', function(done)
 		{
-			function restarted()
-			{
-				worker.removeListener('started', restarted);
-				done();
-			}
-
 			function detectReleased(jobid)
 			{
 				worker.stop();
 				worker.removeListener('job.released', detectReleased);
 
-				producer.peek_delayed(function(err, releasedID, payload)
+				producer.peek_ready(function(err, releasedID, payload)
 				{
 					should.not.exist(err);
 					releasedID.should.equal(jobid);
 					producer.destroy(releasedID, function(err)
 					{
 						should.not.exist(err);
-						worker.on('started', restarted);
-						worker.start([tube]);
+						done();
 					});
 				});
 			}
