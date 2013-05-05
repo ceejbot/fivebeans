@@ -267,6 +267,52 @@ describe('FiveBeansWorker', function()
 			});
 		});
 
+		it('handles jobs that contain arrays (for ruby compatibility)', function(done)
+		{
+			function detectDeleted(jobid)
+			{
+				worker.removeListener('job.deleted', detectDeleted);
+				done();
+			}
+
+			worker.on('job.deleted', detectDeleted);
+
+			var job = ['stalker', { type: 'reverse', payload: 'success'}];
+			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
+			{
+				should.not.exist(err);
+				jobid.should.be.ok;
+			});
+		});
+
+		it('buries jobs when the handler responds with "bury"', function(done)
+		{
+			function detectBuried(jobid)
+			{
+				producer.peek_buried(function(err, buriedID, payload)
+				{
+					worker.removeListener('job.buried', detectBuried);
+
+					should.not.exist(err);
+					buriedID.should.equal(jobid);
+					producer.destroy(buriedID, function(err)
+					{
+						should.not.exist(err);
+						done();
+					});
+				});
+			}
+
+			worker.on('job.buried', detectBuried);
+
+			var job = { type: 'reverse', payload: 'bury'};
+			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
+			{
+				should.not.exist(err);
+				jobid.should.be.ok;
+			});
+		});
+
 		it('releases jobs when the handler responds with "release"', function(done)
 		{
 			function restarted()
@@ -303,53 +349,6 @@ describe('FiveBeansWorker', function()
 				worker.stop();
 			});
 		});
-
-		it('buries jobs when the handler responds with "bury"', function(done)
-		{
-			function detectBuried(jobid)
-			{
-				producer.peek_buried(function(err, buriedID, payload)
-				{
-					worker.removeListener('job.buried', detectBuried);
-
-					should.not.exist(err);
-					buriedID.should.equal(jobid);
-					producer.destroy(buriedID, function(err)
-					{
-						should.not.exist(err);
-						done();
-					});
-				});
-			}
-
-			worker.on('job.buried', detectBuried);
-
-			var job = { type: 'reverse', payload: 'bury'};
-			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
-			{
-				should.not.exist(err);
-				jobid.should.be.ok;
-			});
-		});
-
-		it('handles jobs that contain arrays (for ruby compatibility)', function(done)
-		{
-			function detectDeleted(jobid)
-			{
-				worker.removeListener('job.deleted', detectDeleted);
-				done();
-			}
-
-			worker.on('job.deleted', detectDeleted);
-
-			var job = ['stalker', { type: 'reverse', payload: 'success'}];
-			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
-			{
-				should.not.exist(err);
-				jobid.should.be.ok;
-			});
-		});
-
 	});
 
 	describe('log events', function()

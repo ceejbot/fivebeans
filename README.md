@@ -134,7 +134,7 @@ Kick at most *maxToKick* delayed and buried jobs back into the active queue. Res
 
 `client.kick_job(jobID, function(err) {});`
 
-Kick the specified job id. Responds with `NOT_FOUND` if the job was not found.
+Kick the specified job id. Responds with `NOT_FOUND` if the job was not found. Supported in beanstalkd versions >= 1.6.
 
 ### Server statistics
 
