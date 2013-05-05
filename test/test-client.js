@@ -3,7 +3,8 @@
 var
 	should    = require('chai').should(),
 	fivebeans = require('../index'),
-	fs        = require('fs')
+	fs        = require('fs'),
+	semver    = require('semver')
 	;
 
 var host = '127.0.0.1';
@@ -18,6 +19,7 @@ function readTestImage()
 describe('FiveBeansClient', function()
 {
 	var producer, consumer, testjobid;
+	var version;
 
 	before(function()
 	{
@@ -82,6 +84,17 @@ describe('FiveBeansClient', function()
 				jobid.should.exist;
 				done();
 			});
+		});
+
+		after(function(done)
+		{
+			producer.stats(function(err, response)
+			{
+				if (response.version)
+					version = response.version + '.0';
+				done();
+			});
+
 		});
 	});
 
@@ -285,6 +298,10 @@ describe('FiveBeansClient', function()
 
 		it('#kick_job() kicks a specific job id', function(done)
 		{
+			// Skip the test if the version of beanstalkd doesn't have this command.
+			if (!semver.satisfies(version, ">= 1.8.0"))
+				return done();
+
 			consumer.reserve(function(err, jobid, payload)
 			{
 				consumer.bury(testjobid, fivebeans.LOWEST_PRIORITY, function(err)
@@ -382,5 +399,4 @@ describe('FiveBeansClient', function()
 		});
 	});
 
-	// untested: consumer.touch(), consumer.pause_tube()
 });
