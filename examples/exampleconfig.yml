@@ -6,4 +6,5 @@ handlers:
     - "./handlers/reverse.js"
 watch:
     - 'testtube'
+    - 'example-tube'
 ignoreDefault: true

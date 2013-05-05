@@ -389,6 +389,23 @@ The above code plus [optimist](https://github.com/substack/node-optimist) wrappe
 
 Creates a runner for a worker with the specified ID & configured with the specified yaml file.
 
+Here's the complete source:
+
+```javascript
+#!/usr/bin/env node
+
+var argv = require('optimist')
+    .usage('Usage: beanworker --id=[ID] --config=[config.yml]')
+    .default('id', 'defaultID')
+    .demand(['config'])
+    .argv;
+
+var FiveBeans = require('fivebeans');
+
+var runner = new FiveBeans.runner(argv.id, argv.config);
+runner.go();
+```
+
 ### Configuration file
 
 Here's an example yaml configuration:
