@@ -1,34 +1,34 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <title>Fivebeans by ceejbot</title>
 
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
-    <title>Fivebeans by ceejbot</title>
   </head>
-
   <body>
-    <header>
-      <div class="inner">
+    <div class="wrapper">
+      <header>
         <h1>Fivebeans</h1>
-        <h2>A beanstalkd client for node.js &amp; a simple framework for running beanstalkd workers.</h2>
-        <a href="https://github.com/ceejbot/fivebeans" class="button"><small>View project on</small>GitHub</a>
-      </div>
-    </header>
+        <p>A beanstalkd client for node.js &amp; a simple framework for running beanstalkd workers.</p>
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
-        <section id="main-content">
-          <p>A straightforward and (nearly) complete <a href="http://kr.github.com/beanstalkd/">beanstalkd</a> client for node.js, along with a more opinionated beanstalkd jobs worker &amp; runner.</p>
+        <p class="view"><a href="https://github.com/ceejbot/fivebeans">View the Project on GitHub <small>ceejbot/fivebeans</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/ceejbot/fivebeans/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/ceejbot/fivebeans/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/ceejbot/fivebeans">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p>A straightforward and (nearly) complete <a href="http://kr.github.com/beanstalkd/">beanstalkd</a> client for node.js, along with a more opinionated beanstalkd jobs worker &amp; runner.</p>
 
 <p><strong>Latest version:</strong> 1.0.0-beta1<br><strong>Date:</strong> 5 May 2013</p>
 
@@ -223,23 +223,33 @@
 
 <h3>API</h3>
 
+<h4>constructor</h4>
+
 <p><code>new FiveBeansWorker(options)</code></p>
 
 <p>Returns a new worker object. <em>options</em> is a hash containing the following keys:</p>
 
 <p><strong>id</strong>: how this worker should identify itself in log events<br><strong>host</strong>: beanstalkd host<br><strong>port</strong>: beanstalkd port<br><strong>handlers</strong>: hash with handler objects, with handler types as keys<br><strong>ignoreDefault</strong>: true if this worker should ignore the default tube</p>
 
+<h4>start</h4>
+
 <p><code>start(tubelist)</code></p>
 
 <p>Connect the worker to the beanstalkd server &amp; make it watch the specified tubes. Emits the 'started' event when it is complete.</p>
+
+<h4>stop</h4>
 
 <p><code>stop()</code></p>
 
 <p>Finish processing the current job then close the client. Emits the 'stopped' event when complete.</p>
 
+<h4>watch</h4>
+
 <p><code>watch(tubelist, callback)</code></p>
 
 <p>Begin watching the tubes named in the list.</p>
+
+<h4>ignore</h4>
 
 <p><code>ignore(tubelist, callback)</code></p>
 
@@ -249,25 +259,15 @@
 
 <p>The worker is intended to continue processing jobs through most errors. Its response to exceptions encountered when processing jobs is to bury the job and emit an event that can be logged or handled somewhere else.</p>
 
-<p><code>error</code></p>
+<p><code>error</code>: Emitted on error in the underlying client. Payload is the error object. Execution is halted. You must listen for this event.</p>
 
-<p>Emitted on error in the underlying client. Payload is the error object. Execution is halted. You must listen for this event.</p>
+<p><code>close</code>: Emitted on close in the underlying client. No payload.</p>
 
-<p><code>close</code></p>
+<p><code>started</code>: Worker has started processing. No payload.</p>
 
-<p>Emitted on close in the underlying client. No payload.</p>
+<p><code>stopped</code>: Worker has stopped processing. No payload.</p>
 
-<p><code>started</code></p>
-
-<p>Worker has started processing. No payload.</p>
-
-<p><code>stopped</code></p>
-
-<p>Worker has stopped processing. No payload.</p>
-
-<p><code>info</code></p>
-
-<p>The worker has taken some action that you might want to log. The payload is an object with information about the action, with two fields:</p>
+<p><code>info</code>: The worker has taken some action that you might want to log. The payload is an object with information about the action, with two fields:</p>
 
 <div class="highlight"><pre><span class="p">{</span>
     <span class="nx">clientid</span><span class="o">:</span> <span class="s1">'id-of-worker'</span><span class="p">,</span>
@@ -277,9 +277,7 @@
 
 <p>This event is the tattered remnants of what used to be built-in logging, and it might go away.</p>
 
-<p><code>warning</code></p>
-
-<p>The worker has encountered an error condition that will not stop processing, but that you might wish to act upon or log. The payload is an object with information about the error. Fields guaranteed to be present are:</p>
+<p><code>warning</code>: The worker has encountered an error condition that will not stop processing, but that you might wish to act upon or log. The payload is an object with information about the error. Fields guaranteed to be present are:</p>
 
 <div class="highlight"><pre><span class="p">{</span>
     <span class="nx">clientid</span><span class="o">:</span> <span class="s1">'id-of-worker'</span><span class="p">,</span>
@@ -290,13 +288,9 @@
 
 <p>Some errors might have additional fields providing context, such as a job id.</p>
 
-<p><code>job.reserved</code></p>
+<p><code>job.reserved</code>: The worker has reserved a job. The payload is the job id.</p>
 
-<p>The worker has reserved a job. The payload is the job id.</p>
-
-<p><code>job.handled</code></p>
-
-<p>The worker has completed processing a job. The payload is an object with information about the job.</p>
+<p><code>job.handled</code>: The worker has completed processing a job. The payload is an object with information about the job.</p>
 
 <div class="highlight"><pre><span class="p">{</span>
     <span class="nx">id</span><span class="o">:</span> <span class="nx">job</span> <span class="nx">id</span><span class="p">,</span>
@@ -306,13 +300,9 @@
 <span class="p">}</span>
 </pre></div>
 
-<p><code>job.deleted</code></p>
+<p><code>job.deleted</code>: The worker has deleted a job. The payload is the job id.</p>
 
-<p>The worker has deleted a job. The payload is the job id.</p>
-
-<p><code>job.buried</code></p>
-
-<p>The worker has buried a job. The payload is the job id.</p>
+<p><code>job.buried</code>: The worker has buried a job. The payload is the job id.</p>
 
 <h3>Jobs</h3>
 
@@ -451,25 +441,13 @@
 <ul>
 <li>Handle DEADLINE_SOON from the server.</li>
 </ul>
-        </section>
-
-        <aside id="sidebar">
-          <a href="https://github.com/ceejbot/fivebeans/zipball/master" class="button">
-            <small>Download</small>
-            .zip file
-          </a>
-          <a href="https://github.com/ceejbot/fivebeans/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
-          </a>
-
-          <p class="repo-owner"><a href="https://github.com/ceejbot/fivebeans"></a> is maintained by <a href="https://github.com/ceejbot">ceejbot</a>.</p>
-
-          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.</p>
-        </aside>
-      </div>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/ceejbot">ceejbot</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
     </div>
-
-  
+    <script src="javascripts/scale.fix.js"></script>
+    
   </body>
 </html>
