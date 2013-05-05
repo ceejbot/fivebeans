@@ -1,7 +1,8 @@
 var should = require('chai').should();
 
 var fivebeans = require('../fivebeans'),
-	fs = require('fs')
+	fs = require('fs'),
+	semver = require('semver')
 	;
 
 var host = '127.0.0.1';
@@ -28,6 +29,9 @@ describe('FiveBeansClient', function()
 
 	beforeEach(function(done)
 	{
+		// Only support node >= 0.10
+		if(!semver.gte(process.version, 'v0.10.0')) return done();
+
 		// Mock up the server connection
 		var sinon = require('sinon');
 		var net = require('net');
