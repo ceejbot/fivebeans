@@ -1,0 +1,8 @@
+beanstalkd:
+    host: "localhost"
+    port: 11300
+handlers:
+    - "./test/fixtures/emitkeys.js"
+    - "./dontexist.js"
+watch:
+    - 'testtube'

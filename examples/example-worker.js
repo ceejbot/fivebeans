@@ -6,7 +6,7 @@ var argv = require('optimist')
     .demand(['config'])
     .argv;
 
-var FiveBeans = require('fivebeans');
+var FiveBeans = require('../index');
 
 var runner = new FiveBeans.runner(argv.id, argv.config);
 runner.go();

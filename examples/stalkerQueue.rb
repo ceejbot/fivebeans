@@ -2,7 +2,7 @@
 
 require "stalker"
 
-beanurl = "beanstalk://%s:%d" % ['10.0.0.14', 11300]
+beanurl = "beanstalk://%s:%d" % ['127.0.0.1', 11300]
 $beanstalk = Stalker.connect(beanurl)
 
 Stalker.enqueue('testtube', {
