@@ -1,7 +1,10 @@
-var should = require('chai').should();
+/*global describe:true, it:true, before:true, after:true */
 
-var fivebeans = require('../fivebeans'),
-	fs = require('fs')
+var
+	should    = require('chai').should(),
+	fivebeans = require('../index'),
+	fs        = require('fs'),
+	semver    = require('semver')
 	;
 
 var host = '127.0.0.1';
@@ -15,9 +18,8 @@ function readTestImage()
 
 describe('FiveBeansClient', function()
 {
-	var producer = null;
-	var consumer = null;
-	var testjobid = null;
+	var producer, consumer, testjobid;
+	var version;
 
 	before(function()
 	{
@@ -33,21 +35,27 @@ describe('FiveBeansClient', function()
 			producer.port.should.equal(port);
 		});
 	});
+
 	describe('#connect()', function()
 	{
 		it('creates and saves a connection', function(done)
 		{
-			producer.connect(function(err)
+			producer.on('connect', function()
 			{
-				should.not.exist(err);
 				producer.stream.should.be.ok;
 				done();
+
+			}).on('error', function(err)
+			{
+				throw(err);
 			});
+			producer.connect();
 		});
 	});
+
 	describe('job producer:', function()
 	{
-		it('#use connects to a specific tube', function(done)
+		it('#use() connects to a specific tube', function(done)
 		{
 			producer.use(tube, function(err, response)
 			{
@@ -56,7 +64,8 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#list_tube_used returns the tube used by a producer', function(done)
+
+		it('#list_tube_used() returns the tube used by a producer', function(done)
 		{
 			producer.list_tube_used(function(err, response)
 			{
@@ -65,7 +74,8 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#put submits a job', function(done)
+
+		it('#put() submits a job', function(done)
 		{
 			var data = { type: 'test', payload: 'the explosive energy of the warhead of a missile or of the bomb load  of an aircraft' };
 			producer.put(0, 0, 60, JSON.stringify(data), function(err, jobid)
@@ -75,12 +85,24 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
+
+		after(function(done)
+		{
+			producer.stats(function(err, response)
+			{
+				if (response.version)
+					version = response.version + '.0';
+				done();
+			});
+
+		});
 	});
+
 	describe('job consumer:', function()
 	{
-		it('#watch watches a tube', function(done)
+		it('#watch() watches a tube', function(done)
 		{
-			consumer.connect(function(err)
+			consumer.on('connect', function()
 			{
 				consumer.watch(tube, function(err, response)
 				{
@@ -88,9 +110,14 @@ describe('FiveBeansClient', function()
 					response.should.equal('2');
 					done();
 				});
+			}).on('error', function(err)
+			{
+				throw(err);
 			});
+			consumer.connect();
 		});
-		it('#ignore ignores a tube', function(done)
+
+		it('#ignore() ignores a tube', function(done)
 		{
 			consumer.ignore('default', function(err, response)
 			{
@@ -99,7 +126,8 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#list_tubes_watched returns the tubes the consumer watches', function(done)
+
+		it('#list_tubes_watched() returns the tubes the consumer watches', function(done)
 		{
 			consumer.list_tubes_watched(function(err, response)
 			{
@@ -109,7 +137,8 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#peek_ready peeks ahead at jobs', function(done)
+
+		it('#peek_ready() peeks ahead at jobs', function(done)
 		{
 			this.timeout(4000);
 			producer.peek_ready(function(err, jobid, payload)
@@ -123,18 +152,20 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#stats_job returns job stats', function(done)
+
+		it('#stats_job() returns job stats', function(done)
 		{
 			consumer.stats_job(testjobid, function(err, response)
 			{
 				response.should.be.a('object');
 				response.should.have.property('id');
-				response.id.should.equal(parseInt(testjobid));
+				response.id.should.equal(parseInt(testjobid, 10));
 				response.tube.should.equal(tube);
 				done();
 			});
 		});
-		it('#reserve returns a job', function(done)
+
+		it('#reserve() returns a job', function(done)
 		{
 			consumer.reserve(function(err, jobid, payload)
 			{
@@ -146,7 +177,8 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#touch informs the server the client is still working', function(done)
+
+		it('#touch() informs the server the client is still working', function(done)
 		{
 			consumer.touch(testjobid, function(err)
 			{
@@ -154,7 +186,8 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#release releases a job', function(done)
+
+		it('#release() releases a job', function(done)
 		{
 			consumer.release(testjobid, 1, 1, function(err)
 			{
@@ -167,6 +200,7 @@ describe('FiveBeansClient', function()
 		{
 			var payload = readTestImage();
 			var ptr = 0;
+
 			producer.put(0, 0, 60, payload, function(err, jobid)
 			{
 				should.not.exist(err);
@@ -195,7 +229,7 @@ describe('FiveBeansClient', function()
 
 		it('jobs can contain utf8 data', function(done)
 		{
-			var payload = "Many people like crème brûlée.";
+			var payload = 'Many people like crème brûlée.';
 			var returnString;
 			producer.put(0, 0, 60, payload, function(err, jobid)
 			{
@@ -218,7 +252,7 @@ describe('FiveBeansClient', function()
 			});
 		});
 
-		it('#peek_delayed returns data for a delayed job', function(done)
+		it('#peek_delayed() returns data for a delayed job', function(done)
 		{
 			producer.peek_delayed(function(err, jobid, payload)
 			{
@@ -227,7 +261,8 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#bury buries a job (> 1sec expected)', function(done)
+
+		it('#bury() buries a job (> 1sec expected)', function(done)
 		{
 			// this takes a second because of the minumum delay enforced by release() above
 			this.timeout(3000);
@@ -240,7 +275,8 @@ describe('FiveBeansClient', function()
 				});
 			});
 		});
-		it('#peek_buried returns data for a buried job', function(done)
+
+		it('#peek_buried() returns data for a buried job', function(done)
 		{
 			producer.peek_buried(function(err, jobid, payload)
 			{
@@ -249,7 +285,8 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#kick un-buries jobs in the producer\'s used queue', function(done)
+
+		it('#kick() un-buries jobs in the producer\'s used queue', function(done)
 		{
 			producer.kick(10, function(err, count)
 			{
@@ -258,7 +295,29 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#pause_tube suspends new job reservations (> 1sec expected)', function(done)
+
+		it('#kick_job() kicks a specific job id', function(done)
+		{
+			// Skip the test if the version of beanstalkd doesn't have this command.
+			if (!semver.satisfies(version, ">= 1.8.0"))
+				return done();
+
+			consumer.reserve(function(err, jobid, payload)
+			{
+				consumer.bury(testjobid, fivebeans.LOWEST_PRIORITY, function(err)
+				{
+					should.not.exist(err);
+
+					producer.kick_job(testjobid, function(err)
+					{
+						should.not.exist(err);
+						done();
+					});
+				});
+			});
+		});
+
+		it('#pause_tube() suspends new job reservations (> 1sec expected)', function(done)
 		{
 			consumer.pause_tube(tube, 3, function(err)
 			{
@@ -270,7 +329,8 @@ describe('FiveBeansClient', function()
 				});
 			});
 		});
-		it('#destroy deletes a job (nearly 2 sec expected)', function(done)
+
+		it('#destroy() deletes a job (nearly 2 sec expected)', function(done)
 		{
 			// this takes a couple of seconds because of the minumum delay enforced by pause_tube() above
 			this.timeout(5000);
@@ -283,7 +343,8 @@ describe('FiveBeansClient', function()
 				});
 			});
 		});
-		it('#reserve_with_timeout times out when no jobs are waiting (> 1sec expected)', function(done)
+
+		it('#reserve_with_timeout() times out when no jobs are waiting (> 1sec expected)', function(done)
 		{
 			this.timeout(3000);
 			consumer.reserve_with_timeout(1, function(err, jobid, payload)
@@ -296,7 +357,7 @@ describe('FiveBeansClient', function()
 
 	describe('server statistics', function()
 	{
-		it('#stats returns a hash of server stats', function(done)
+		it('#stats() returns a hash of server stats', function(done)
 		{
 			consumer.stats(function(err, response)
 			{
@@ -306,7 +367,8 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#list_tubes returns a list of tubes', function(done)
+
+		it('#list_tubes() returns a list of tubes', function(done)
 		{
 			consumer.list_tubes(function(err, response)
 			{
@@ -316,7 +378,8 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
-		it('#stats_tube returns a hash of tube stats', function(done)
+
+		it('#stats_tube() returns a hash of tube stats', function(done)
 		{
 			consumer.stats_tube(tube, function(err, response)
 			{
@@ -324,6 +387,7 @@ describe('FiveBeansClient', function()
 				done();
 			});
 		});
+
 		it('#stats_tube() returns not found for non-existent tubes', function(done)
 		{
 			consumer.stats_tube('i-dont-exist', function(err, response)
@@ -335,5 +399,4 @@ describe('FiveBeansClient', function()
 		});
 	});
 
-	// untested: consumer.touch(), consumer.pause_tube()
 });

@@ -1,17 +1,20 @@
-var fivebeans = require('../fivebeans');
+var fivebeans = require('../index');
 
 var host = 'localhost';
 var port = 11300;
-var tube = 'testtube';
+var tube = 'example-tube';
 
-var job1 = {
+var job1 =
+{
 	type: 'reverse',
 	payload: 'a man a plan a canal panama'
 };
 
-var job2 = {
+var job2 =
+{
 	type: 'emitkeys',
-	payload: {
+	payload:
+	{
 		one: 'bloop',
 		two: 'blooop',
 		three: 'bloooop',
@@ -19,7 +22,8 @@ var job2 = {
 	}
 };
 
-var joblist = [
+var joblist =
+[
 	{ type: 'reverse', payload: 'madam, I\'m Adam' },
 	{ type: 'reverse', payload: 'satan oscillate my metallic sonatas' },
 	{ type: 'reverse', payload: 'able was I ere I saw Elba' }
@@ -42,7 +46,7 @@ var continuer = function(err, jobid)
 };
 
 var emitter = new fivebeans.client(host, port);
-emitter.connect(function(err)
+emitter.on('connect', function()
 {
 	emitter.use('testtube', function(err, tname)
 	{
@@ -60,3 +64,5 @@ emitter.connect(function(err)
 		});
 	});
 });
+
+emitter.connect();
