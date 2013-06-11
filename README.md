@@ -1,10 +1,9 @@
 
 A straightforward and (nearly) complete [beanstalkd](http://kr.github.com/beanstalkd/) client for node.js, along with a more opinionated beanstalkd jobs worker & runner.
 
-__Latest version:__ 1.0.0-beta1  
 __Date:__ 5 May 2013
 
-[![build status](https://secure.travis-ci.org/ceejbot/fivebeans.png)](http://travis-ci.org/ceejbot/fivebeans)
+[![build status](https://secure.travis-ci.org/ceejbot/fivebeans.png)](http://travis-ci.org/ceejbot/fivebeans) [![Dependencies](https://david-dm.org/ceejbot/fivebeans.png)](https://david-dm.org/ceejbot/fivebeans) [![NPM version](https://badge.fury.io/js/fivebeans.png)](http://badge.fury.io/js/fivebeans)
 
 ## FiveBeansClient
 
