@@ -14,7 +14,7 @@
 	{
 		"blanket":    "*",
 		"chai":       "*",
-		"mocha":      "> 1.9",
+		"mocha":      "*",
 		"semver":     "*",
 		"travis-cov": "*"
 	},
