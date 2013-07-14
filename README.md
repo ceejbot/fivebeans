@@ -4,7 +4,7 @@ __Date:__ 5 May 2013
 
 [![build status](https://secure.travis-ci.org/ceejbot/fivebeans.png)](http://travis-ci.org/ceejbot/fivebeans) [![Dependencies](https://david-dm.org/ceejbot/fivebeans.png)](https://david-dm.org/ceejbot/fivebeans)
 
-[![NPM](http://nodei.co/npm/aerogel.png)](http://nodei.co/npm/aerogel/)
+[![NPM](http://nodei.co/npm/fivebeans.png)](http://nodei.co/npm/fivebeans/)
 
 ## FiveBeansClient
 
