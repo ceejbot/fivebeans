@@ -299,6 +299,11 @@ describe('FiveBeansClient', function()
 		it('#kick_job() kicks a specific job id', function(done)
 		{
 			// Skip the test if the version of beanstalkd doesn't have this command.
+			// Beanstalkd does not have semver-compliant version numbers, however.
+			if (version.match(/\d+\.\d+\.\d+\.\d+/))
+			{
+				version = version.replace(/\.\d+$/, '');
+			}
 			if (!semver.satisfies(version, ">= 1.8.0"))
 				return done();
 
