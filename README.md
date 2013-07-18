@@ -351,7 +351,7 @@ var options =
     port: 11300,
     handlers:
     {
-        emitkeys: require('./emitkeyshandler')
+        emitkeys: require('./emitkeyshandler')()
     },
     ignoreDefault: true
 }
