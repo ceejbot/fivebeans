@@ -53,7 +53,8 @@ var testopts =
 	handlers:
 	{
 		reverse: new TestHandler(),
-	}
+	},
+	timeout: 1
 };
 
 //-------------------------------------------------------------
@@ -98,6 +99,19 @@ describe('FiveBeansWorker', function()
 			var w = new fivebeans.worker({ id: 'testworker' });
 			w.should.have.property('on');
 			w.on.should.be.a('function');
+		});
+
+		it('respects the timeout option', function()
+		{
+			var opts =
+			{
+				id: 'testworker',
+				host: 'example.com',
+				port: 3000,
+				timeout: 20
+			};
+			var w = new fivebeans.worker(opts);
+			w.timeout.should.equal(20);
 		});
 	});
 
