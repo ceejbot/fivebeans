@@ -1,9 +1,13 @@
 {
 	"name"            : "fivebeans",
 	"description"     : "beanstalkd client & worker daemon for node.",
-	"version"         : "1.0.1",
-	"author"          : "C J Silverio <ceejceej@gmail.com>",
 	"keywords"        : ["beanstalkd", "worker", "jobs", "work-queue" ],
+	"version"         : "1.0.2",
+	"author"          : "C J Silverio <ceejceej@gmail.com>",
+	"contributors":
+	[
+		"Jon Keating <jon@licq.org>"
+	],
 	"dependencies"    :
 	{
 		"js-yaml":  "*",
