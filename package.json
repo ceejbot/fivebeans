@@ -2,7 +2,7 @@
 	"name"            : "fivebeans",
 	"description"     : "beanstalkd client & worker daemon for node.",
 	"keywords"        : ["beanstalkd", "worker", "jobs", "work-queue" ],
-	"version"         : "1.0.2",
+	"version"         : "1.0.3",
 	"author"          : "C J Silverio <ceejceej@gmail.com>",
 	"contributors":
 	[
