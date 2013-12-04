@@ -2,11 +2,12 @@
 	"name"            : "fivebeans",
 	"description"     : "beanstalkd client & worker daemon for node.",
 	"keywords"        : ["beanstalkd", "worker", "jobs", "work-queue" ],
-	"version"         : "1.0.4",
+	"version"         : "1.1.0",
 	"author"          : "C J Silverio <ceejceej@gmail.com>",
 	"contributors":
 	[
-		"Jon Keating <jon@licq.org>"
+		"Jon Keating <jon@licq.org>",
+		"Jevgenij Tsoi <jevgenij@virtusize.com>"
 	],
 	"dependencies"    :
 	{
@@ -28,9 +29,10 @@
 	"bin"             : { "beanworker": "./bin/beanworker" },
 	"scripts"         :
 	{
-		"test":     "./node_modules/.bin/mocha -s 2000 -R spec test/test*.js && ./node_modules/.bin/mocha --require blanket -R travis-cov test/test*.js",
-		"test-cov": "./node_modules/.bin/mocha --require blanket -R travis-cov test/test*.js",
-		"coverage": "./node_modules/.bin/mocha --require blanket -R html-cov test/test*.js > test/coverage.html",
+		"test-suite": "./node_modules/.bin/mocha -s 2000 -t 5000 -R spec test/test*.js",
+		"test":       "npm run test-suite && npm run test-cov",
+		"test-cov":   "./node_modules/.bin/mocha --require blanket -R travis-cov test/test*.js",
+		"coverage":   "./node_modules/.bin/mocha --require blanket -R html-cov test/test*.js > test/coverage.html",
 		"blanket":
 		{
 			"pattern": "//^((?!\/node_modules|test|examples\/).)*$/ig",

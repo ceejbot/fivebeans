@@ -428,7 +428,13 @@ Why yaml not json? Because when I originally wrote this, it was in support of a 
 
 ## Contributors
 
-Many thanks to @AVVS, @crackcomm, and @zr40 for their pull requests.
+@AVVS  
+@crackcomm  
+@zr40  
+Jon Keating
+Jevgenij Tsoi
+
+Many thanks!
 
 ## TODO
 
