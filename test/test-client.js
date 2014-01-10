@@ -165,6 +165,27 @@ describe('FiveBeansClient', function()
 			});
 		});
 
+		it('consumer can run stats_job() while a job is reserved', function(done)
+		{
+			consumer.reserve(function(err, jobid, payload)
+			{
+				should.not.exist(err);
+				consumer.stats_job(jobid, function(err, res)
+				{
+					should.not.exist(err);
+					res.should.be.an('object');
+					res.should.have.property('id');
+					res.id.should.equal(parseInt(jobid, 10));
+					res.state.should.equal('reserved');
+					consumer.release(jobid, 1, 1, function(err)
+					{
+						should.not.exist(err);
+						done();
+					});
+				});
+			});
+		});
+
 		it('#reserve() returns a job', function(done)
 		{
 			consumer.reserve(function(err, jobid, payload)
