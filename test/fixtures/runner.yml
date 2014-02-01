@@ -4,6 +4,7 @@ beanstalkd:
 handlers:
     - "./test/fixtures/emitkeys.js"
     - "./test/fixtures/reverse.js"
+    - "./test/fixtures/async.js"
 watch:
     - 'testtube'
 ignoreDefault: true

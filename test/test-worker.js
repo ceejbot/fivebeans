@@ -1,7 +1,7 @@
-/*global describe:true, it:true, before:true, after:true */
+/*global describe:true, it:true, before:true, after:true, beforeEach:true, afterEach:true */
 
 var
-	should    = require('chai').should(),
+	demand    = require('must'),
 	events    = require('events'),
 	fivebeans = require('../index'),
 	fs        = require('fs'),
@@ -10,6 +10,8 @@ var
 
 //-------------------------------------------------------------
 // some job handlers for testing
+
+var asyncHandler = require('./fixtures/async')();
 
 function TestHandler()
 {
@@ -53,6 +55,7 @@ var testopts =
 	handlers:
 	{
 		reverse: new TestHandler(),
+		longasync: asyncHandler,
 	},
 	timeout: 1
 };
@@ -62,7 +65,7 @@ var testopts =
 describe('FiveBeansWorker', function()
 {
 	this.timeout(5000);
-	var producer, worker, testjobid;
+	var producer, testjobid;
 
 	before(function(done)
 	{
@@ -89,16 +92,16 @@ describe('FiveBeansWorker', function()
 			};
 			var w = new fivebeans.worker(opts);
 
-			w.id.should.equal(opts.id);
-			w.host.should.equal(opts.host);
-			w.port.should.equal(opts.port);
+			w.id.must.equal(opts.id);
+			w.host.must.equal(opts.host);
+			w.port.must.equal(opts.port);
 		});
 
 		it('inherits from EventEmitter', function()
 		{
 			var w = new fivebeans.worker({ id: 'testworker' });
-			w.should.have.property('on');
-			w.on.should.be.a('function');
+			w.must.have.property('on');
+			w.on.must.be.a.function();
 		});
 
 		it('respects the timeout option', function()
@@ -111,7 +114,7 @@ describe('FiveBeansWorker', function()
 				timeout: 20
 			};
 			var w = new fivebeans.worker(opts);
-			w.timeout.should.equal(20);
+			w.timeout.must.equal(20);
 		});
 	});
 
@@ -124,8 +127,9 @@ describe('FiveBeansWorker', function()
 			w = new fivebeans.worker({id: 'fail', port: 5000});
 			w.on('error', function(err)
 			{
-				err.should.be.ok;
-				err.errno.should.equal('ECONNREFUSED');
+				err.must.exist();
+				err.must.have.property('errno');
+				err.errno.must.equal('ECONNREFUSED');
 				done();
 			});
 			w.start();
@@ -148,20 +152,16 @@ describe('FiveBeansWorker', function()
 		{
 			w.on('stopped', function()
 			{
-				w.stopped.should.equal(true);
+				w.stopped.must.equal(true);
 				done();
 			});
 
 			w.stop();
 		});
 
-	});
-
-	describe('job processing', function()
-	{
 		it('watches tubes on start', function(done)
 		{
-			worker = new fivebeans.worker(testopts);
+			var worker = new fivebeans.worker(testopts);
 			// worker.on('info', function(obj) { console.log(obj); })
 			// worker.on('warning', function(obj) { console.error(util.inspect(obj)); })
 
@@ -169,18 +169,30 @@ describe('FiveBeansWorker', function()
 			{
 				worker.client.list_tubes_watched(function(err, response)
 				{
-					should.not.exist(err);
-					response.should.be.an('array');
-					response.length.should.equal(2);
-					response.indexOf(tube).should.be.above(-1);
+					demand(err).not.exist();
+					response.must.be.an.array();
+					response.length.must.equal(2);
+					response.indexOf(tube).must.be.above(-1);
 
 					worker.removeListener('started', handleStart);
-
-					done();
+					worker.stop();
 				});
 			}
 
 			worker.on('started', handleStart);
+			worker.on('stopped', done);
+			worker.start([tube, 'unused']);
+		});
+	});
+
+	describe('job processing', function()
+	{
+		var worker;
+
+		before(function(done)
+		{
+			worker = new fivebeans.worker(testopts);
+			worker.on('started', done);
 			worker.start([tube, 'unused']);
 		});
 
@@ -189,15 +201,15 @@ describe('FiveBeansWorker', function()
 			var job = { format: 'bad'};
 			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
 			{
-				should.not.exist(err);
-				jobid.should.be.ok;
+				demand(err).not.exist();
+				jobid.must.exist();
 
 				function detectReady()
 				{
 					producer.peek_ready(function(err, jobid, payload)
 					{
-						err.should.be.ok;
-						err.should.equal('NOT_FOUND');
+						err.must.exist();
+						err.must.equal('NOT_FOUND');
 						done();
 					});
 				}
@@ -214,11 +226,11 @@ describe('FiveBeansWorker', function()
 				{
 					worker.removeListener('job.buried', handleBuried);
 
-					should.not.exist(err);
-					buriedID.should.equal(jobid);
+					demand(err).not.exist();
+					buriedID.must.equal(jobid);
 					producer.destroy(buriedID, function(err)
 					{
-						should.not.exist(err);
+						demand(err).not.exist();
 						done();
 					});
 				});
@@ -228,8 +240,8 @@ describe('FiveBeansWorker', function()
 
 			producer.put(0, 0, 60, '{ I am invalid JSON', function(err, jobid)
 			{
-				should.not.exist(err);
-				jobid.should.be.ok;
+				demand(err).not.exist();
+				jobid.must.exist();
 			});
 		});
 
@@ -241,11 +253,11 @@ describe('FiveBeansWorker', function()
 				{
 					worker.removeListener('job.buried', handleBuried);
 
-					should.not.exist(err);
-					buriedID.should.equal(jobid);
+					demand(err).not.exist();
+					buriedID.must.equal(jobid);
 					producer.destroy(buriedID, function(err)
 					{
-						should.not.exist(err);
+						demand(err).not.exist();
 						done();
 					});
 				});
@@ -255,8 +267,8 @@ describe('FiveBeansWorker', function()
 			var job = { type: 'unknown', payload: 'extremely important!'};
 			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
 			{
-				should.not.exist(err);
-				jobid.should.be.ok;
+				demand(err).not.exist();
+				jobid.must.exist();
 			});
 		});
 
@@ -266,8 +278,9 @@ describe('FiveBeansWorker', function()
 
 			function verifyResult(item)
 			{
-				item.should.be.ok;
-				item.should.equal('success');
+				item.must.exist();
+				item.must.be.a.string();
+				item.must.equal('success');
 				handler.removeListener('result', verifyResult);
 				done();
 			}
@@ -276,8 +289,8 @@ describe('FiveBeansWorker', function()
 			var job = { type: 'reverse', payload: 'success'};
 			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
 			{
-				should.not.exist(err);
-				jobid.should.be.ok;
+				demand(err).not.exist();
+				jobid.must.exist();
 			});
 		});
 
@@ -294,8 +307,8 @@ describe('FiveBeansWorker', function()
 			var job = ['stalker', { type: 'reverse', payload: 'success'}];
 			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
 			{
-				should.not.exist(err);
-				jobid.should.be.ok;
+				demand(err).not.exist();
+				jobid.must.exist();
 			});
 		});
 
@@ -307,11 +320,11 @@ describe('FiveBeansWorker', function()
 				{
 					worker.removeListener('job.buried', detectBuried);
 
-					should.not.exist(err);
-					buriedID.should.equal(jobid);
+					demand(err).not.exist();
+					buriedID.must.equal(jobid);
 					producer.destroy(buriedID, function(err)
 					{
-						should.not.exist(err);
+						demand(err).not.exist();
 						done();
 					});
 				});
@@ -322,8 +335,62 @@ describe('FiveBeansWorker', function()
 			var job = { type: 'reverse', payload: 'bury'};
 			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
 			{
-				should.not.exist(err);
-				jobid.should.be.ok;
+				demand(err).not.exist();
+				jobid.must.exist();
+			});
+		});
+
+		it('can call touch() on jobs in progress', function(done)
+		{
+			this.timeout(15000);
+
+			var jobid, timeleft;
+
+			function getInfo()
+			{
+				worker.client.stats_job(jobid, function(err, info)
+				{
+					demand(err).not.exist();
+					timeleft = info['time-left'];
+					timeleft.must.be.below(27); // 30 seconds minus the 2 second wait
+
+					worker.client.touch(jobid, function(err)
+					{
+						demand(err).not.exist();
+
+						worker.client.stats_job(jobid, function(err, info2)
+						{
+							// now test that the wait has been reset
+							demand(err).not.exist();
+							info2['time-left'].must.be.above(timeleft);
+						});
+					});
+				});
+			}
+
+			function handled()
+			{
+				worker.removeListener('job.handled', handled);
+				done();
+			}
+
+			function handleReserved(id)
+			{
+				jobid = id;
+				worker.removeListener('job.reserved', handleReserved);
+				worker.on('job.handled', handled);
+
+				setTimeout(getInfo, 3000);
+			}
+
+			worker.on('job.reserved', handleReserved);
+			worker.on('warning', console.log);
+
+			var job = { type: 'longasync', payload: 'ignored' };
+			producer.put(0, 0, 30, JSON.stringify(job), function(err, jobid)
+			{
+				demand(err).not.exist();
+				jobid.must.exist();
 			});
 		});
 
@@ -336,11 +403,11 @@ describe('FiveBeansWorker', function()
 
 				producer.peek_ready(function(err, releasedID, payload)
 				{
-					should.not.exist(err);
-					releasedID.should.equal(jobid);
+					demand(err).not.exist();
+					releasedID.must.equal(jobid);
 					producer.destroy(releasedID, function(err)
 					{
-						should.not.exist(err);
+						demand(err).not.exist();
 						done();
 					});
 				});
@@ -348,25 +415,18 @@ describe('FiveBeansWorker', function()
 
 			worker.on('job.released', detectReleased);
 
-			var job = { type: 'reverse', payload: 'release'};
+			var job = { type: 'reverse', payload: 'release' };
 			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
 			{
-				should.not.exist(err);
-				jobid.should.be.ok;
-				worker.stop();
+				demand(err).not.exist();
+				jobid.must.exist();
 			});
 		});
+
 	});
 
 	describe('log events', function()
 	{
-
+		it('have tests');
 	});
-
-	after(function(done)
-	{
-		worker.stop();
-		done();
-	});
-
 });
