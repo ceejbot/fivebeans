@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var argv = require('optimist')
+var argv = require('yargs')
     .usage('Usage: beanworker --id=[ID] --config=[config.yml]')
     .default('id', 'defaultID')
     .demand(['config'])

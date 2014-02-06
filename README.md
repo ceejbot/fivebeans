@@ -374,7 +374,7 @@ runner.go();
 
 ### bin/beanworker
 
-The above code plus [optimist](https://github.com/substack/node-optimist) wrapped in a node shell script for your convenience.
+The above code plus [yargs](https://github.com/chevex/yargs) wrapped in a node shell script for your convenience.
 
 `bin/beanworker --id=[ID] --config=[config.yml]`
 
@@ -385,7 +385,7 @@ Here's the complete source:
 ```javascript
 #!/usr/bin/env node
 
-var argv = require('optimist')
+var argv = require('yargs')
     .usage('Usage: beanworker --id=[ID] --config=[config.yml]')
     .default('id', 'defaultID')
     .demand(['config'])
