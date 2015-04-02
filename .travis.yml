@@ -1,7 +1,11 @@
 language: node_js
 node_js:
     - "0.10"
+    - "0.12"
+    - iojs
 before_install:
     - sudo apt-get update -qq
     - sudo apt-get install -qq beanstalkd
     - sudo beanstalkd -d -l 127.0.0.1 -p 11300
+script:
+    - npm run test-travis
