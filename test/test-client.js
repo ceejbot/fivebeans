@@ -424,5 +424,23 @@ describe('FiveBeansClient', function()
 			});
 		});
 	});
+	
+	describe('concurrent commands', function()
+	{
+		it('can be handled', function(done)
+		{
+			var concurrency = 10;
+			var replied = 0;
+			var handleResponse = function(err, response)
+			{
+				if (++replied >= concurrency) {
+					done();
+				}
+			};
+			for (var i = 0; i < 10; ++i) {
+				consumer.stats_tube(tube, handleResponse);
+			}
+		});
+	});
 
 });
