@@ -1,10 +1,6 @@
 A straightforward and (nearly) complete [beanstalkd](http://kr.github.com/beanstalkd/) client for node.js, along with a more opinionated beanstalkd jobs worker & runner.
 
-__Date:__ 5 May 2013
-
-[![build status](https://secure.travis-ci.org/ceejbot/fivebeans.png)](http://travis-ci.org/ceejbot/fivebeans) [![Dependencies](https://david-dm.org/ceejbot/fivebeans.png)](https://david-dm.org/ceejbot/fivebeans)
-
-[![NPM](http://nodei.co/npm/fivebeans.png)](http://nodei.co/npm/fivebeans/)
+[![on npm](http://img.shields.io/npm/v/fivebeans.svg?style=flat)](https://www.npmjs.org/package/fivebeans)  [![Tests](http://img.shields.io/travis/ceejbot/fivebeans.svg?style=flat)](http://travis-ci.org/ceejbot/fivebeans)  ![Coverage](http://img.shields.io/badge/coverage-95%25-green.svg?style=flat)   [![Dependencies](http://img.shields.io/david/ceejbot/fivebeans.svg?style=flat)](https://david-dm.org/ceejbot/fivebeans) ![io.js supported](https://img.shields.io/badge/io.js-supported-green.svg?style=flat)
 
 ## FiveBeansClient
 
@@ -36,7 +32,7 @@ client
     })
     .on('error', function(err)
     {
-        // connection failure    
+        // connection failure
     })
     .on('close', function()
     {
@@ -296,7 +292,7 @@ __payload__: job data, in whatever format the job defines
 
 The worker looks up a handler using the given type string and calls work() on the job payload.
 
-The job *may* also be a JSON array containing two items: 
+The job *may* also be a JSON array containing two items:
 
 `[ tubename, jobdata ]`
 
@@ -439,4 +435,3 @@ Many thanks!
 ## TODO
 
 * Handle DEADLINE_SOON from the server.
-
