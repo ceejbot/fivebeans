@@ -94,12 +94,9 @@ describe('FiveBeansRunner', function()
 		{
 			worker.stopped.must.equal(false);
 			worker.client.must.exist();
-			worker.once('started', function()
-			{
-				worker.stop();
-			});
-			worker.once('stopped', done);
-		});
+			worker.on('stopped', done);
+			worker.stop();
+		})
 	});
 
 	describe('go()', function()
@@ -111,11 +108,8 @@ describe('FiveBeansRunner', function()
 
 			r.worker.must.exist();
 			r.worker.client.must.exist();
-			r.worker.once('started', function()
-			{
-				r.worker.stop();
-			});
-			r.worker.once('stopped', done);
+			r.worker.on('stopped', done);
+			r.worker.stop();
 		});
 	});
 

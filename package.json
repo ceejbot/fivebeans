@@ -55,7 +55,7 @@
   },
   "scripts": {
     "test": "mocha -t 8000 --check-leaks --ui exports --require patched-blanket -R mocoverage test/test-*.js",
-    "test-cov": "mocha -t 10000 --require patched-blanket -R travis-cov test/test-*.js",
-    "test-travis": "mocha -R spec -t 10000 test/test-*.js && npm run test-cov"
+    "test-cov": "mocha -t 20000 --require patched-blanket -R travis-cov test/test-*.js",
+    "test-travis": "mocha -R spec -t 20000 test/test-*.js && npm run test-cov"
   }
 }
