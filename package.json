@@ -29,33 +29,34 @@
     "Jevgenij Tsoi <jevgenij@virtusize.com>"
   ],
   "dependencies": {
-    "js-yaml": "^3.0.1",
-    "lodash": "~3.6.0",
+    "js-yaml": "~3.3.1",
+    "lodash": "~3.9.3",
     "semver": "~4.3.3",
-    "yargs": "~3.6.0"
+    "yargs": "~3.10.0"
   },
   "devDependencies": {
-    "blanket": "~1.1.6",
-    "mocha": "~2.2.1",
+    "blanket": "~1.1.7",
+    "mocha": "~2.2.5",
     "mocoverage": "~1.0.0",
     "must": "~0.12.0",
-    "patched-blanket": "~1.0.1",
     "travis-cov": "~0.2.5"
   },
   "keywords": [
     "beanstalkd",
-    "worker",
     "jobs",
-    "work-queue"
+    "work-queue",
+    "worker"
   ],
+  "license": "MIT",
   "main": "index",
   "repository": {
     "type": "git",
     "url": "git://github.com/ceejbot/fivebeans.git"
   },
   "scripts": {
-    "test": "mocha -t 8000 --check-leaks --ui exports --require patched-blanket -R mocoverage test/test-*.js",
+    "test": "mocha -t 8000 --check-leaks --ui exports --require blanket -R mocoverage test/test-*.js",
     "test-cov": "mocha -t 20000 --require patched-blanket -R travis-cov test/test-*.js",
-    "test-travis": "mocha -R spec -t 20000 test/test-*.js && npm run test-cov"
+    "test-travis": "mocha -R spec -t 20000 test/test-*.js && npm run test-cov",
+    "lint": "jshint bin test examples lib"
   }
 }
