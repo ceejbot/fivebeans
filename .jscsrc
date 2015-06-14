@@ -53,6 +53,6 @@
     "safeContextKeyword": "self",
     "validateLineBreaks": "LF",
     "validateQuoteMarks": "'",
-    "validateIndentation": 4,
+    "validateIndentation": "\t",
     "requireSemicolons": true
 }

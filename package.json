@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "blanket": "~1.1.7",
+    "jscs": "~1.13.1",
     "mocha": "~2.2.5",
     "mocoverage": "~1.0.0",
     "must": "~0.12.0",
