@@ -48,6 +48,14 @@ describe('FiveBeansRunner', function()
 			r.id.must.equal('test');
 			r.configpath.must.equal(__dirname + '/fixtures/runner.yml');
 		});
+
+		it('creates a runner when given valid options via js', function()
+		{
+			var r = new fivebeans.runner('test', null, require('./fixtures/runner.json'));
+			r.must.have.property('worker');
+			r.id.must.equal('test');
+			r.must.have.property('config');
+		});
 	});
 
 	describe('readConfiguration()', function()
