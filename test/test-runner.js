@@ -40,6 +40,15 @@ describe('FiveBeansRunner', function()
 			shouldThrow.must.throw(Error);
 		});
 
+		it('throws when config neither a path nor object', function()
+		{
+			function shouldThrow()
+			{
+				var r = new fivebeans.runner('test', 1);
+			}
+			shouldThrow.must.throw(Error);
+		});
+
 		it('creates a runner when given valid options', function()
 		{
 			var r = new fivebeans.runner('test', 'test/fixtures/runner.yml');
