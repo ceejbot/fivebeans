@@ -4,7 +4,6 @@ var
 	demand    = require('must'),
 	events    = require('events'),
 	fivebeans = require('../index'),
-	fs        = require('fs'),
 	util      = require('util')
 	;
 
@@ -33,21 +32,13 @@ TestHandler.prototype.reverseWords = function(input)
 	return words.join('');
 };
 
-var joblist =
-[
-	{ type: 'reverse', payload: 'madam, I\'m Adam' },
-	{ type: 'reverse', payload: 'satan oscillate my metallic sonatas' },
-	{ type: 'reverse', payload: 'able was I ere I saw Elba' },
-];
-
 //-------------------------------------------------------------
 
 var host = '127.0.0.1';
 var port = 11300;
 var tube = 'testtube';
 
-var testopts =
-{
+var testopts = {
 	id: 'testworker',
 	host: host,
 	port: port,
@@ -65,7 +56,7 @@ var testopts =
 describe('FiveBeansWorker', function()
 {
 	this.timeout(5000);
-	var producer, testjobid;
+	var producer;
 
 	before(function(done)
 	{
@@ -74,6 +65,7 @@ describe('FiveBeansWorker', function()
 		{
 			producer.use(tube, function(err, resp)
 			{
+				demand(err).not.exist();
 				done();
 			});
 		});
@@ -84,8 +76,7 @@ describe('FiveBeansWorker', function()
 	{
 		it('creates a worker with the passed-in options', function()
 		{
-			var opts =
-			{
+			var opts = {
 				id: 'testworker',
 				host: 'example.com',
 				port: 3000
@@ -106,8 +97,7 @@ describe('FiveBeansWorker', function()
 
 		it('respects the timeout option', function()
 		{
-			var opts =
-			{
+			var opts = {
 				id: 'testworker',
 				host: 'example.com',
 				port: 3000,

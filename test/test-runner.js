@@ -2,9 +2,7 @@
 
 var
 	demand    = require('must'),
-	fivebeans = require('../index'),
-	fs        = require('fs'),
-	util      = require('util')
+	fivebeans = require('../index')
 	;
 
 //-------------------------------------------------------------
@@ -17,7 +15,7 @@ describe('FiveBeansRunner', function()
 		{
 			function shouldThrow()
 			{
-				var r = new fivebeans.runner();
+				return new fivebeans.runner();
 			}
 			shouldThrow.must.throw(Error);
 		});
@@ -26,7 +24,7 @@ describe('FiveBeansRunner', function()
 		{
 			function shouldThrow()
 			{
-				var r = new fivebeans.runner('test');
+				return new fivebeans.runner('test');
 			}
 			shouldThrow.must.throw(Error);
 		});
@@ -35,7 +33,7 @@ describe('FiveBeansRunner', function()
 		{
 			function shouldThrow()
 			{
-				var r = new fivebeans.runner('test', '/not/a/real/path.yml');
+				return new fivebeans.runner('test', '/not/a/real/path.yml');
 			}
 			shouldThrow.must.throw(Error);
 		});
@@ -56,10 +54,7 @@ describe('FiveBeansRunner', function()
 		{
 			var r = new fivebeans.runner('test', 'test/fixtures/badconfig.yml');
 
-			function shouldThrow()
-			{
-				var config = r.readConfiguration();
-			}
+			function shouldThrow() { r.readConfiguration(); }
 			shouldThrow.must.throw(Error);
 		});
 
@@ -96,7 +91,7 @@ describe('FiveBeansRunner', function()
 			worker.client.must.exist();
 			worker.on('stopped', done);
 			worker.stop();
-		})
+		});
 	});
 
 	describe('go()', function()
