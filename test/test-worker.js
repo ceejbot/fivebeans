@@ -21,7 +21,7 @@ function TestHandler()
 util.inherits(TestHandler, events.EventEmitter);
 
 TestHandler.prototype.work = function(job, callback)
-{	
+{
 	if (job.payload)
 	{
 		this.emit('result', this.reverseWords(job.payload));
