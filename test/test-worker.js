@@ -19,10 +19,10 @@ function TestHandler()
 }
 util.inherits(TestHandler, events.EventEmitter);
 
-TestHandler.prototype.work = function(payload, callback)
+TestHandler.prototype.work = function(job, callback)
 {
-	this.emit('result', this.reverseWords(payload));
-	callback(payload, 0);
+	this.emit('result', this.reverseWords(job.payload));
+	callback(job.payload, 0);
 };
 
 TestHandler.prototype.reverseWords = function(input)
