@@ -4,7 +4,8 @@ var
 	demand    = require('must'),
 	events    = require('events'),
 	fivebeans = require('../index'),
-	util      = require('util')
+	util      = require('util'),
+	async     = require('async')
 	;
 
 //-------------------------------------------------------------
@@ -178,12 +179,80 @@ describe('FiveBeansWorker', function()
 	describe('job processing', function()
 	{
 		var worker;
+		var payloadOptionalWorker;
+		var payloadOptionalTestopts;
+		var payloadOptionalTestProducer;
+		var payloadOptionalTube = 'payloadOptional';
 
 		before(function(done)
 		{
+			var processQueue = function()
+			{
+				function optionalPayloadHandler()
+				{
+					events.EventEmitter.call(this);
+					this.type = 'optionalPayloadReverse';
+				}
+				util.inherits(optionalPayloadHandler, events.EventEmitter);
+				optionalPayloadHandler.prototype.work = function(job, callback)
+				{
+					this.emit('result', this.reverseWords(job.message));
+					callback(job.message, 0);
+				};
+
+				optionalPayloadHandler.prototype.reverseWords = function(input)
+				{
+					var words = input.split(' ');
+					words.reverse();
+					return words.join('');
+				};
+				var handler = new optionalPayloadHandler();
+				return handler;
+			};
+			payloadOptionalTestopts = {
+				id: 'optionalPayloadTestworker',
+				host: host,
+				port: port,
+				ignoreDefault: true,
+				handlers: {
+					optionalPayloadReverse: processQueue(),
+					longasync: asyncHandler,
+				},
+				timeout: 1,
+				ignorePayload: true
+			};
 			worker = new fivebeans.worker(testopts);
-			worker.on('started', done);
-			worker.start([tube, 'unused']);
+			payloadOptionalWorker = new fivebeans.worker(payloadOptionalTestopts);
+			async.parallel([
+
+				function(cb)
+				{
+					worker.on('started', cb);
+					worker.start([tube, 'unused']);
+				},
+				function(cb)
+				{
+					payloadOptionalTestProducer = new fivebeans.client(host, port);
+					payloadOptionalTestProducer.on('connect', function()
+					{
+						payloadOptionalTestProducer.use(payloadOptionalTube,
+							function(err, resp)
+							{
+								if(err)
+									return cb(err);
+								payloadOptionalWorker.on('started', cb);
+								payloadOptionalWorker.start([payloadOptionalTube, 'unused']);
+							});
+					});
+					payloadOptionalTestProducer.connect();
+				}
+			],
+			function(err)
+			{
+				if(err)
+					return done(err);
+				done();
+			});
 		});
 
 		it('deletes jobs with bad formats', function(done)
@@ -284,6 +353,31 @@ describe('FiveBeansWorker', function()
 			});
 		});
 
+		it('passes good jobs with message payload', function(done)
+		{
+			var handler = payloadOptionalTestopts.handlers.optionalPayloadReverse;
+
+			function verifyResult(item)
+			{
+				item.must.exist();
+				item.must.be.a.string();
+				item.must.equal('success');
+				handler.removeListener('result', verifyResult);
+				done();
+			}
+
+			handler.on('result', verifyResult);
+			var job = {
+				type: 'optionalPayloadReverse',
+				message: 'success'
+			};
+			payloadOptionalTestProducer.put(0, 0, 60, JSON.stringify(job),
+				function(err, jobid)
+				{
+					demand(err).not.exist();
+					jobid.must.exist();
+				});
+		});
 		it('handles jobs that contain arrays (for ruby compatibility)', function(done)
 		{
 			function detectDeleted(jobid)
