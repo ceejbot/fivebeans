@@ -186,18 +186,22 @@ describe('FiveBeansWorker', function()
 
 		before(function(done)
 		{
-			var processQueue = function() {
-				function optionalPayloadHandler() {
+			var processQueue = function()
+			{
+				function optionalPayloadHandler()
+				{
 					events.EventEmitter.call(this);
 					this.type = 'optionalPayloadReverse';
 				}
 				util.inherits(optionalPayloadHandler, events.EventEmitter);
-				optionalPayloadHandler.prototype.work = function(job, callback) {
+				optionalPayloadHandler.prototype.work = function(job, callback)
+				{
 					this.emit('result', this.reverseWords(job.message));
 					callback(job.message, 0);
-				}
+				};
 
-				optionalPayloadHandler.prototype.reverseWords = function(input) {
+				optionalPayloadHandler.prototype.reverseWords = function(input)
+				{
 					var words = input.split(' ');
 					words.reverse();
 					return words.join('');
@@ -221,21 +225,32 @@ describe('FiveBeansWorker', function()
 			payloadOptionalWorker = new fivebeans.worker(payloadOptionalTestopts);
 			async.parallel([
 
-				function(cb) {
+				function(cb)
+				{
 					worker.on('started', cb);
 					worker.start([tube, 'unused']);
 				},
-				function(cb) {
+				function(cb)
+				{
 					payloadOptionalTestProducer = new fivebeans.client(host, port);
-					payloadOptionalTestProducer.on('connect', function() {
-						payloadOptionalTestProducer.use(payloadOptionalTube, function(err, resp) {
-							payloadOptionalWorker.on('started', cb);
-							payloadOptionalWorker.start([payloadOptionalTube, 'unused']);
-						});
+					payloadOptionalTestProducer.on('connect', function()
+					{
+						payloadOptionalTestProducer.use(payloadOptionalTube,
+							function(err, resp)
+							{
+								if(err)
+									return cb(err);
+								payloadOptionalWorker.on('started', cb);
+								payloadOptionalWorker.start([payloadOptionalTube, 'unused']);
+							});
 					});
 					payloadOptionalTestProducer.connect();
 				}
-			], function(err) {
+			],
+			function(err)
+			{
+				if(err)
+					return done(err);
 				done();
 			});
 		});
@@ -338,10 +353,12 @@ describe('FiveBeansWorker', function()
 			});
 		});
 
-		it('passes good jobs with message payload', function(done) {
+		it('passes good jobs with message payload', function(done)
+		{
 			var handler = payloadOptionalTestopts.handlers.optionalPayloadReverse;
 
-			function verifyResult(item) {
+			function verifyResult(item)
+			{
 				item.must.exist();
 				item.must.be.a.string();
 				item.must.equal('success');
@@ -354,10 +371,12 @@ describe('FiveBeansWorker', function()
 				type: 'optionalPayloadReverse',
 				message: 'success'
 			};
-			payloadOptionalTestProducer.put(0, 0, 60, JSON.stringify(job), function(err, jobid) {
-				demand(err).not.exist();
-				jobid.must.exist();
-			});
+			payloadOptionalTestProducer.put(0, 0, 60, JSON.stringify(job),
+				function(err, jobid)
+				{
+					demand(err).not.exist();
+					jobid.must.exist();
+				});
 		});
 		it('handles jobs that contain arrays (for ruby compatibility)', function(done)
 		{
