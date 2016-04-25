@@ -205,6 +205,7 @@ __port__: beanstalkd port
 __handlers__: hash with handler objects, with handler types as keys  
 __ignoreDefault__: true if this worker should ignore the default tube
 __timeout__: timeout parameter used with on reserve_with_timeout, defaults to 10 (in seconds)
+__ignorePaylod__:true if your job is using any other attribute then payload to pass job payload to worker
 
 #### start
 
