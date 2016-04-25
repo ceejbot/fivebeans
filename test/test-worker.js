@@ -1,11 +1,11 @@
 /*global describe:true, it:true, before:true, after:true, beforeEach:true, afterEach:true */
 
 var
-	demand = require('must'),
-	events = require('events'),
+	demand    = require('must'),
+	events    = require('events'),
 	fivebeans = require('../index'),
-	util = require('util'),
-	async = require('async')
+	util      = require('util'),
+	async     = require('async')
 	;
 
 //-------------------------------------------------------------
@@ -13,18 +13,21 @@ var
 
 var asyncHandler = require('./fixtures/async')();
 
-function TestHandler() {
+function TestHandler()
+{
 	events.EventEmitter.call(this);
 	this.type = 'reverse';
 }
 util.inherits(TestHandler, events.EventEmitter);
 
-TestHandler.prototype.work = function(payload, callback) {
+TestHandler.prototype.work = function(payload, callback)
+{
 	this.emit('result', this.reverseWords(payload));
 	callback(payload, 0);
 };
 
-TestHandler.prototype.reverseWords = function(input) {
+TestHandler.prototype.reverseWords = function(input)
+{
 	var words = input.split(' ');
 	words.reverse();
 	return words.join('');
@@ -41,7 +44,8 @@ var testopts = {
 	host: host,
 	port: port,
 	ignoreDefault: true,
-	handlers: {
+	handlers:
+	{
 		reverse: new TestHandler(),
 		longasync: asyncHandler,
 	},
@@ -50,11 +54,13 @@ var testopts = {
 
 //-------------------------------------------------------------
 
-describe('FiveBeansWorker', function() {
+describe('FiveBeansWorker', function()
+{
 	this.timeout(5000);
 	var producer;
 
-	before(function(done) {
+	before(function(done)
+	{
 		producer = new fivebeans.client(host, port);
 		producer.on('connect', function()
 		{
@@ -83,10 +89,9 @@ describe('FiveBeansWorker', function() {
 			w.port.must.equal(opts.port);
 		});
 
-		it('inherits from EventEmitter', function() {
-			var w = new fivebeans.worker({
-				id: 'testworker'
-			});
+		it('inherits from EventEmitter', function()
+		{
+			var w = new fivebeans.worker({ id: 'testworker' });
 			w.must.have.property('on');
 			w.on.must.be.a.function();
 		});
@@ -104,15 +109,15 @@ describe('FiveBeansWorker', function() {
 		});
 	});
 
-	describe('starting & stopping', function() {
+	describe('starting & stopping', function()
+	{
 		var w;
 
-		it('emits the error event on failure', function(done) {
-			w = new fivebeans.worker({
-				id: 'fail',
-				port: 5000
-			});
-			w.on('error', function(err) {
+		it('emits the error event on failure', function(done)
+		{
+			w = new fivebeans.worker({id: 'fail', port: 5000});
+			w.on('error', function(err)
+			{
 				err.must.exist();
 				err.must.have.property('errno');
 				err.errno.must.equal('ECONNREFUSED');
@@ -121,18 +126,23 @@ describe('FiveBeansWorker', function() {
 			w.start();
 		});
 
-		it('emits the started event on success', function(done) {
+		it('emits the started event on success', function(done)
+		{
 			w = new fivebeans.worker(testopts);
-			w.on('started', function() {
+			w.on('started', function()
+			{
 				done();
-			}).on('error', function(err) {
-				throw (err);
+			}).on('error', function(err)
+			{
+				throw(err);
 			});
 			w.start();
 		});
 
-		it('stops and cleans up when stopped', function(done) {
-			w.on('stopped', function() {
+		it('stops and cleans up when stopped', function(done)
+		{
+			w.on('stopped', function()
+			{
 				w.stopped.must.equal(true);
 				done();
 			});
@@ -140,13 +150,16 @@ describe('FiveBeansWorker', function() {
 			w.stop();
 		});
 
-		it('watches tubes on start', function(done) {
+		it('watches tubes on start', function(done)
+		{
 			var worker = new fivebeans.worker(testopts);
 			// worker.on('info', function(obj) { console.log(obj); })
 			// worker.on('warning', function(obj) { console.error(util.inspect(obj)); })
 
-			function handleStart() {
-				worker.client.list_tubes_watched(function(err, response) {
+			function handleStart()
+			{
+				worker.client.list_tubes_watched(function(err, response)
+				{
 					demand(err).not.exist();
 					response.must.be.an.array();
 					response.length.must.equal(2);
@@ -163,18 +176,16 @@ describe('FiveBeansWorker', function() {
 		});
 	});
 
-	describe('job processing', function() {
+	describe('job processing', function()
+	{
 		var worker;
 		var payloadOptionalWorker;
 		var payloadOptionalTestopts;
 		var payloadOptionalTestProducer;
 		var payloadOptionalTube = 'payloadOptional';
 
-		before(function(done) {
-			worker = new fivebeans.worker(testopts);
-			// worker.on('started', done);
-			// worker.start([tube, 'unused']);
-
+		before(function(done)
+		{
 			var processQueue = function() {
 				function optionalPayloadHandler() {
 					events.EventEmitter.call(this);
@@ -206,6 +217,7 @@ describe('FiveBeansWorker', function() {
 				timeout: 1,
 				ignorePayload: true
 			};
+			worker = new fivebeans.worker(testopts);
 			payloadOptionalWorker = new fivebeans.worker(payloadOptionalTestopts);
 			async.parallel([
 
@@ -226,19 +238,20 @@ describe('FiveBeansWorker', function() {
 			], function(err) {
 				done();
 			});
-
 		});
 
-		it('deletes jobs with bad formats', function(done) {
-			var job = {
-				format: 'bad'
-			};
-			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid) {
+		it('deletes jobs with bad formats', function(done)
+		{
+			var job = { format: 'bad'};
+			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
+			{
 				demand(err).not.exist();
 				jobid.must.exist();
 
-				function detectReady() {
-					producer.peek_ready(function(err, jobid, payload) {
+				function detectReady()
+				{
+					producer.peek_ready(function(err, jobid, payload)
+					{
 						err.must.exist();
 						err.must.equal('NOT_FOUND');
 						done();
@@ -249,14 +262,18 @@ describe('FiveBeansWorker', function() {
 			});
 		});
 
-		it('buries jobs with bad json', function(done) {
-			function handleBuried(jobid) {
-				producer.peek_buried(function(err, buriedID, payload) {
+		it('buries jobs with bad json', function(done)
+		{
+			function handleBuried(jobid)
+			{
+				producer.peek_buried(function(err, buriedID, payload)
+				{
 					worker.removeListener('job.buried', handleBuried);
 
 					demand(err).not.exist();
 					buriedID.must.equal(jobid);
-					producer.destroy(buriedID, function(err) {
+					producer.destroy(buriedID, function(err)
+					{
 						demand(err).not.exist();
 						done();
 					});
@@ -265,20 +282,25 @@ describe('FiveBeansWorker', function() {
 
 			worker.on('job.buried', handleBuried);
 
-			producer.put(0, 0, 60, '{ I am invalid JSON', function(err, jobid) {
+			producer.put(0, 0, 60, '{ I am invalid JSON', function(err, jobid)
+			{
 				demand(err).not.exist();
 				jobid.must.exist();
 			});
 		});
 
-		it('buries jobs for which it has no handler', function(done) {
-			function handleBuried(jobid) {
-				producer.peek_buried(function(err, buriedID, payload) {
+		it('buries jobs for which it has no handler', function(done)
+		{
+			function handleBuried(jobid)
+			{
+				producer.peek_buried(function(err, buriedID, payload)
+				{
 					worker.removeListener('job.buried', handleBuried);
 
 					demand(err).not.exist();
 					buriedID.must.equal(jobid);
-					producer.destroy(buriedID, function(err) {
+					producer.destroy(buriedID, function(err)
+					{
 						demand(err).not.exist();
 						done();
 					});
@@ -286,20 +308,20 @@ describe('FiveBeansWorker', function() {
 			}
 
 			worker.on('job.buried', handleBuried);
-			var job = {
-				type: 'unknown',
-				payload: 'extremely important!'
-			};
-			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid) {
+			var job = { type: 'unknown', payload: 'extremely important!'};
+			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
+			{
 				demand(err).not.exist();
 				jobid.must.exist();
 			});
 		});
 
-		it('passes good jobs to handlers', function(done) {
+		it('passes good jobs to handlers', function(done)
+		{
 			var handler = testopts.handlers.reverse;
 
-			function verifyResult(item) {
+			function verifyResult(item)
+			{
 				item.must.exist();
 				item.must.be.a.string();
 				item.must.equal('success');
@@ -308,11 +330,9 @@ describe('FiveBeansWorker', function() {
 			}
 
 			handler.on('result', verifyResult);
-			var job = {
-				type: 'reverse',
-				payload: 'success'
-			};
-			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid) {
+			var job = { type: 'reverse', payload: 'success'};
+			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
+			{
 				demand(err).not.exist();
 				jobid.must.exist();
 			});
@@ -339,33 +359,36 @@ describe('FiveBeansWorker', function() {
 				jobid.must.exist();
 			});
 		});
-
-		it('handles jobs that contain arrays (for ruby compatibility)', function(done) {
-			function detectDeleted(jobid) {
+		it('handles jobs that contain arrays (for ruby compatibility)', function(done)
+		{
+			function detectDeleted(jobid)
+			{
 				worker.removeListener('job.deleted', detectDeleted);
 				done();
 			}
 
 			worker.on('job.deleted', detectDeleted);
 
-			var job = ['stalker', {
-				type: 'reverse',
-				payload: 'success'
-			}];
-			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid) {
+			var job = ['stalker', { type: 'reverse', payload: 'success'}];
+			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
+			{
 				demand(err).not.exist();
 				jobid.must.exist();
 			});
 		});
 
-		it('buries jobs when the handler responds with "bury"', function(done) {
-			function detectBuried(jobid) {
-				producer.peek_buried(function(err, buriedID, payload) {
+		it('buries jobs when the handler responds with "bury"', function(done)
+		{
+			function detectBuried(jobid)
+			{
+				producer.peek_buried(function(err, buriedID, payload)
+				{
 					worker.removeListener('job.buried', detectBuried);
 
 					demand(err).not.exist();
 					buriedID.must.equal(jobid);
-					producer.destroy(buriedID, function(err) {
+					producer.destroy(buriedID, function(err)
+					{
 						demand(err).not.exist();
 						done();
 					});
@@ -374,31 +397,34 @@ describe('FiveBeansWorker', function() {
 
 			worker.on('job.buried', detectBuried);
 
-			var job = {
-				type: 'reverse',
-				payload: 'bury'
-			};
-			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid) {
+			var job = { type: 'reverse', payload: 'bury'};
+			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
+			{
 				demand(err).not.exist();
 				jobid.must.exist();
 			});
 		});
 
-		it('can call touch() on jobs in progress', function(done) {
+		it('can call touch() on jobs in progress', function(done)
+		{
 			this.timeout(15000);
 
 			var jobid, timeleft;
 
-			function getInfo() {
-				worker.client.stats_job(jobid, function(err, info) {
+			function getInfo()
+			{
+				worker.client.stats_job(jobid, function(err, info)
+				{
 					demand(err).not.exist();
 					timeleft = info['time-left'];
 					timeleft.must.be.below(27); // 30 seconds minus the 2 second wait
 
-					worker.client.touch(jobid, function(err) {
+					worker.client.touch(jobid, function(err)
+					{
 						demand(err).not.exist();
 
-						worker.client.stats_job(jobid, function(err, info2) {
+						worker.client.stats_job(jobid, function(err, info2)
+						{
 							// now test that the wait has been reset
 							demand(err).not.exist();
 							info2['time-left'].must.be.above(timeleft);
@@ -407,12 +433,14 @@ describe('FiveBeansWorker', function() {
 				});
 			}
 
-			function handled() {
+			function handled()
+			{
 				worker.removeListener('job.handled', handled);
 				done();
 			}
 
-			function handleReserved(id) {
+			function handleReserved(id)
+			{
 				jobid = id;
 				worker.removeListener('job.reserved', handleReserved);
 				worker.on('job.handled', handled);
@@ -423,25 +451,27 @@ describe('FiveBeansWorker', function() {
 			worker.on('job.reserved', handleReserved);
 			worker.on('warning', console.log);
 
-			var job = {
-				type: 'longasync',
-				payload: 'ignored'
-			};
-			producer.put(0, 0, 30, JSON.stringify(job), function(err, jobid) {
+			var job = { type: 'longasync', payload: 'ignored' };
+			producer.put(0, 0, 30, JSON.stringify(job), function(err, jobid)
+			{
 				demand(err).not.exist();
 				jobid.must.exist();
 			});
 		});
 
-		it('releases jobs when the handler responds with "release"', function(done) {
-			function detectReleased(jobid) {
+		it('releases jobs when the handler responds with "release"', function(done)
+		{
+			function detectReleased(jobid)
+			{
 				worker.stop();
 				worker.removeListener('job.released', detectReleased);
 
-				producer.peek_ready(function(err, releasedID, payload) {
+				producer.peek_ready(function(err, releasedID, payload)
+				{
 					demand(err).not.exist();
 					releasedID.must.equal(jobid);
-					producer.destroy(releasedID, function(err) {
+					producer.destroy(releasedID, function(err)
+					{
 						demand(err).not.exist();
 						done();
 					});
@@ -450,11 +480,9 @@ describe('FiveBeansWorker', function() {
 
 			worker.on('job.released', detectReleased);
 
-			var job = {
-				type: 'reverse',
-				payload: 'release'
-			};
-			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid) {
+			var job = { type: 'reverse', payload: 'release' };
+			producer.put(0, 0, 60, JSON.stringify(job), function(err, jobid)
+			{
 				demand(err).not.exist();
 				jobid.must.exist();
 			});
@@ -462,7 +490,8 @@ describe('FiveBeansWorker', function() {
 
 	});
 
-	describe('log events', function() {
+	describe('log events', function()
+	{
 		it('have tests');
 	});
 });
