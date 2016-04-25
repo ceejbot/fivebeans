@@ -4,9 +4,14 @@ var
 	demand = require('must'),
 	events = require('events'),
 	fivebeans = require('../index'),
+<<<<<<< HEAD
 	fs = require('fs'),
 	util = require('util'),
 	async = require('async');
+=======
+	util      = require('util')
+	;
+>>>>>>> 70f1e7d5e171d4a2189204ff30ad641d2b371229
 
 //-------------------------------------------------------------
 // some job handlers for testing
@@ -30,6 +35,7 @@ TestHandler.prototype.reverseWords = function(input) {
 	return words.join('');
 };
 
+<<<<<<< HEAD
 var joblist =
 	[{
 		type: 'reverse',
@@ -42,6 +48,8 @@ var joblist =
 		payload: 'able was I ere I saw Elba'
 	}, ];
 
+=======
+>>>>>>> 70f1e7d5e171d4a2189204ff30ad641d2b371229
 //-------------------------------------------------------------
 
 var host = '127.0.0.1';
@@ -64,20 +72,35 @@ var testopts = {
 
 describe('FiveBeansWorker', function() {
 	this.timeout(5000);
-	var producer, testjobid;
+	var producer;
 
 	before(function(done) {
 		producer = new fivebeans.client(host, port);
+<<<<<<< HEAD
 		producer.on('connect', function() {
 			producer.use(tube, function(err, resp) {
+=======
+		producer.on('connect', function()
+		{
+			producer.use(tube, function(err, resp)
+			{
+				demand(err).not.exist();
+>>>>>>> 70f1e7d5e171d4a2189204ff30ad641d2b371229
 				done();
 			});
 		});
 		producer.connect();
 	});
 
+<<<<<<< HEAD
 	describe('constructor', function() {
 		it('creates a worker with the passed-in options', function() {
+=======
+	describe('constructor', function()
+	{
+		it('creates a worker with the passed-in options', function()
+		{
+>>>>>>> 70f1e7d5e171d4a2189204ff30ad641d2b371229
 			var opts = {
 				id: 'testworker',
 				host: 'example.com',
@@ -98,7 +121,12 @@ describe('FiveBeansWorker', function() {
 			w.on.must.be.a.function();
 		});
 
+<<<<<<< HEAD
 		it('respects the timeout option', function() {
+=======
+		it('respects the timeout option', function()
+		{
+>>>>>>> 70f1e7d5e171d4a2189204ff30ad641d2b371229
 			var opts = {
 				id: 'testworker',
 				host: 'example.com',

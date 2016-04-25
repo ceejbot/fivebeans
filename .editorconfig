@@ -1,0 +1,13 @@
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+[*.js]
+indent_style = tab
+indent_size = 4
+trim_trailing_whitespace = true
+curly_bracket_next_line = true
+indent_brace_style = Allman
+quote_type = single

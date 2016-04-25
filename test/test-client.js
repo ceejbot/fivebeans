@@ -90,6 +90,7 @@ describe('FiveBeansClient', function()
 		{
 			producer.stats(function(err, response)
 			{
+				demand(err).not.exist();
 				if (response.version)
 					version = response.version + '.0';
 				done();
@@ -157,6 +158,7 @@ describe('FiveBeansClient', function()
 		{
 			consumer.stats_job(testjobid, function(err, response)
 			{
+				demand(err).not.exist();
 				response.must.be.an.object();
 				response.must.have.property('id');
 				response.id.must.equal(parseInt(testjobid, 10));
@@ -289,6 +291,8 @@ describe('FiveBeansClient', function()
 			this.timeout(3000);
 			consumer.reserve(function(err, jobid, payload)
 			{
+				demand(err).not.exist();
+
 				consumer.bury(jobid, fivebeans.LOWEST_PRIORITY, function(err)
 				{
 					demand(err).not.exist();
@@ -330,6 +334,7 @@ describe('FiveBeansClient', function()
 
 			consumer.reserve(function(err, jobid, payload)
 			{
+				demand(err).not.exist();
 				consumer.bury(testjobid, fivebeans.LOWEST_PRIORITY, function(err)
 				{
 					demand(err).not.exist();
@@ -362,6 +367,7 @@ describe('FiveBeansClient', function()
 			this.timeout(5000);
 			consumer.reserve(function(err, jobid, payload)
 			{
+				demand(err).not.exist();
 				consumer.destroy(jobid, function(err)
 				{
 					demand(err).not.exist();
@@ -387,6 +393,7 @@ describe('FiveBeansClient', function()
 		{
 			consumer.stats(function(err, response)
 			{
+				demand(err).not.exist();
 				response.must.be.an.object();
 				response.must.have.property('pid');
 				response.must.have.property('version');
@@ -409,6 +416,7 @@ describe('FiveBeansClient', function()
 		{
 			consumer.stats_tube(tube, function(err, response)
 			{
+				demand(err).not.exist();
 				response.must.be.an.object();
 				done();
 			});
@@ -424,7 +432,7 @@ describe('FiveBeansClient', function()
 			});
 		});
 	});
-	
+
 	describe('concurrent commands', function()
 	{
 		it('can be handled', function(done)
@@ -433,13 +441,12 @@ describe('FiveBeansClient', function()
 			var replied = 0;
 			var handleResponse = function(err, response)
 			{
-				if (++replied >= concurrency) {
+				demand(err).not.exist();
+				if (++replied >= concurrency)
 					done();
-				}
 			};
-			for (var i = 0; i < 10; ++i) {
+			for (var i = 0; i < 10; ++i)
 				consumer.stats_tube(tube, handleResponse);
-			}
 		});
 	});
 
