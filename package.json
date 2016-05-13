@@ -1,12 +1,12 @@
 {
-  "name": "fivebeans",
+  "name": "fivebeans-optional",
   "description": "beanstalkd client & worker daemon for node.",
   "version": "1.4.0",
-  "author": "C J Silverio <ceejceej@gmail.com>",
+  "author": ["C J Silverio <ceejceej@gmail.com>", "Sandeep Pandey <s4n989@gmail.com>"],
   "bin": {
     "beanworker": "./bin/beanworker"
   },
-  "bugs": "http://github.com/ceejbot/fivebeans/issues",
+  "bugs": "http://github.com/sandeep89/fivebeans/issues",
   "contributors": [
     "Jon Keating <jon@licq.org>",
     "Jevgenij Tsoi <jevgenij@virtusize.com>"
@@ -26,7 +26,7 @@
     "nyc": "~6.4.0",
      "async": "^2.0.0-rc.3"
   },
-  "homepage": "https://github.com/ceejbot/fivebeans#readme",
+  "homepage": "http://github.com/sandeep89/fivebeans#readme",
   "keywords": [
     "beanstalkd",
     "jobs",
@@ -37,7 +37,7 @@
   "main": "index",
   "repository": {
     "type": "git",
-    "url": "git://github.com/ceejbot/fivebeans.git"
+    "url": "git://github.com/sandeep89/fivebeans.git"
   },
   "scripts": {
     "coverage": "nyc report --reporter=text-lcov | coveralls",
