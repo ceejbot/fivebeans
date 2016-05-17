@@ -8,7 +8,7 @@ Heavily inspired by [node-beanstalk-client](https://github.com/benlund/node-bean
 
 All client method names are the same case & spelling as the beanstalk text command, with hyphens replaced by underscore. The single exception is `delete`, which is renamed to `destroy()`.
 
-For complete details on the beanstalkd commands, see [its protocol documentation](https://github.com/kr/beanstalkd/blob/master/doc/protocol.md).
+For complete details on the beanstalkd commands, see [its protocol documentation](https://github.com/kr/beanstalkd/blob/master/doc/protocol.txt).
 
 ### Creating a client
 
