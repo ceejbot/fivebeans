@@ -8,3 +8,4 @@ handlers:
 watch:
     - 'testtube'
 ignoreDefault: true
+timeout: 1

@@ -75,7 +75,7 @@ describe('FiveBeansRunner', function()
 	{
 		var worker;
 
-		it('returns a worker', function()
+		it('returns a worker', function(done)
 		{
 			var r = new fivebeans.runner('test', 'test/fixtures/runner.yml');
 			worker = r.createWorker();
@@ -83,13 +83,14 @@ describe('FiveBeansRunner', function()
 			worker.must.exist();
 			worker.must.be.an.object();
 			(worker instanceof fivebeans.worker).must.equal(true);
+			worker.once('started', done);
 		});
 
 		it('started the worker', function(done)
 		{
 			worker.stopped.must.equal(false);
 			worker.client.must.exist();
-			worker.on('stopped', done);
+			worker.once('stopped', done);
 			worker.stop();
 		});
 	});
