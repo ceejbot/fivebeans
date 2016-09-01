@@ -333,7 +333,7 @@ module.exports = function()
 };
 ```
 
-The [examples](fivebeans/examples) directory has another sample handler.
+The [examples](examples) directory has another sample handler.
 
 ### Example
 
