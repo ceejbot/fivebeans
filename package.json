@@ -22,7 +22,7 @@
     "eslint": "~2.13.1",
     "mocha": "~3.0.2",
     "must": "~0.13.2",
-    "nyc": "~8.1.0"
+    "nyc": "~10.1.0"
   },
   "homepage": "https://github.com/ceejbot/fivebeans#readme",
   "keywords": [
