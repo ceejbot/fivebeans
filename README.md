@@ -398,9 +398,8 @@ runner.go();
 Here's an example yaml configuration:
 
 ```yaml
-beanstalkd:
-    host: "127.0.0.1"
-    port: 11300
+host: "127.0.0.1"
+port: 11300
 watch:
     - 'circle'
     - 'picadilly'
@@ -413,7 +412,7 @@ handlers:
 ignoreDefault: true
 ```
 
-__beanstalkd__: where to connect  
+__host__, __port__: where to connect  
 __watch__: a list of tubes to watch.  
 __handlers__: a list of handler files to require  
 __ignoreDefault__: true if this worker should ignore the default tube
