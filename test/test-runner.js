@@ -64,8 +64,7 @@ describe('FiveBeansRunner', function()
 			var config = r.readConfiguration();
 
 			config.must.be.an.object();
-			config.must.have.property('beanstalkd');
-			config.beanstalkd.host.must.equal('localhost');
+			config.host.must.equal('localhost');
 			config.watch.must.be.an.array();
 			config.ignoreDefault.must.equal(true);
 		});
