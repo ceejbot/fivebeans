@@ -18,7 +18,7 @@
     "yargs": "~5.0.0"
   },
   "devDependencies": {
-    "coveralls": "~2.11.12",
+    "coveralls": "~2.13.0",
     "eslint": "~2.13.1",
     "mocha": "~3.0.2",
     "must": "~0.13.2",
