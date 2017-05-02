@@ -4,6 +4,8 @@ A straightforward and (nearly) complete [beanstalkd](http://kr.github.com/beanst
 
 ## FiveBeansClient
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/ceejbot/fivebeans.svg)](https://greenkeeper.io/)
+
 Heavily inspired by [node-beanstalk-client](https://github.com/benlund/node-beanstalk-client), which is a perfectly usable client but somewhat dusty. I wanted more complete support of the beanstalkd protocol in a project written in plain javascript.
 
 All client method names are the same case & spelling as the beanstalk text command, with hyphens replaced by underscore. The single exception is `delete`, which is renamed to `destroy()`.
