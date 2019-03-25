@@ -20,7 +20,7 @@
   "devDependencies": {
     "coveralls": "^3.0.3",
     "eslint": "^5.15.3",
-    "mocha": "~3.0.2",
+    "mocha": "^6.0.2",
     "must": "~0.13.2",
     "nyc": "~8.1.0"
   },
