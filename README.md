@@ -422,6 +422,15 @@ If the handler paths don't start with `/` the current working directory will be 
 
 Why yaml not json? Because when I originally wrote this, it was in support of a ruby service, and yaml is the native config format over in that land. I continue using it because it's more readable than json and easier for humans to type.
 
+## fivebeans developer Instructions
+### Testing Instructions
+
+To perform local unit testing of `fivebeans`.
+- clone the repository
+- ensure that you have `npm` and `node` installed.  For mac users, I highly recommend installing through homebrew [https://brew.sh/]: `brew install node`
+- ensure that you have `beanstalkd` installed and running.  To install: `brew install beanstalkd`.  To run: `brew services start beanstalkd`
+- run tests: `npm test`
+
 ## Contributors
 
 @AVVS  
