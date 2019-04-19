@@ -1,6 +1,5 @@
-beanstalkd:
-    host: "localhost"
-    port: 11300
+host: "localhost"
+port: 11300
 handlers:
     - "./handlers/emitkeys.js"
     - "./handlers/reverse.js"
