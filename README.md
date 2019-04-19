@@ -398,9 +398,8 @@ runner.go();
 Here's an example yaml configuration:
 
 ```yaml
-beanstalkd:
-    host: "127.0.0.1"
-    port: 11300
+host: "127.0.0.1"
+port: 11300
 watch:
     - 'circle'
     - 'picadilly'
