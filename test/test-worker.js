@@ -404,9 +404,4 @@ describe('FiveBeansWorker', function()
 			});
 		});
 	});
-
-	describe('log events', function()
-	{
-		it('have tests');
-	});
 });
